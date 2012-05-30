@@ -36,6 +36,21 @@ form .btn {
   position: relative;
   top: -0.28em;
 }
+.loading, .error, .instructions {
+  text-align: center;
+  margin:1em 0;
+  display: none;
+}
+.loading {
+  color: #777;
+}
+.error {
+  color:#FF3333;
+  padding: 0 1em;
+}
+.instructions {
+  font-weight: bold;
+}
 .tweet {
   min-height: 51px;
   border-top: 0.1em solid #E8E8E8;
@@ -71,6 +86,9 @@ form .btn {
 .tweet .info .username {
   color: #999;
   font-size: 0.97em;
+}
+#chooseAuthor {
+  display: none;
 }
 @media (max-width: 480px) { 
   .tweet .avatar {

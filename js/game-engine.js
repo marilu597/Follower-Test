@@ -1,6 +1,6 @@
 window.Game = new function(){
 	this.username = '';
-	this.n_to_select = 10;
+	this.n_to_select = 5;
 	this.all_ids;
 	this.selected_ids = [];
 	this.data = [];
@@ -17,13 +17,13 @@ window.Game = new function(){
         that.loadData();
       },
       error: function() {
-      	alert("There was an error loading the data. Please make sure the username is correct.");
+      	window.show_error();
       }
 		});
 	};
 
 	this.loadData = function() {
-		if(this.selected_ids.length < this.n_to_select || this.attempts > 30) {
+		if(this.selected_ids.length < this.n_to_select || this.attempts > 15) {
 			this.attempts++;
 			var user_id = this.getRandomUserId(this.all_ids, this.selected_ids);
 			var that = this;

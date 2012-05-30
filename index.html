@@ -41,53 +41,41 @@
     </div>
   </div>
   <!-- End Navbar -->
-  <div class="container-fluid">
-  <div class="row-fluid">
-    <div class="well span12">
-      <h1>How well do you know the people you follow?</h1>
-      <form accept-charset="UTF-8">
-        <label for="screen_name">@</label>
-        <input id="screen_name" name="screen_name" placeholder="Enter your username" size="30" type="text">
-        <button type="submit" class="btn btn-primary" 
-          data-loading-text="loading..." >Go</button>
-      </form>
-      <div class="tweets">
-        <div class="tweet row-fluid">
-          <div class="avatar">
-            <img src="img/unknown.png">
-          </div>
-          <div class="info">
-            <p>
-              <span class="name">Qué hacer hoy Panamá</span>
-              <span class="username">‏@QuehacerhoyPTY</span>
-            </p>
-            <p>#Congreso de cuentistas y críticos en la @UTPpanama del 5 al 8Jun +Info http://bit.ly/JqqXaZ #Panama</p>
-          </div>
+
+  <!-- Main -->
+  <div id="main" class="container-fluid">
+    <div class="row-fluid">
+      <div class="well span12">
+        <h1>How well do you know the people you follow?</h1>
+        <form accept-charset="UTF-8">
+          <label for="screen_name">@</label>
+          <input id="screen_name" name="screen_name" placeholder="Enter your username" size="30" type="text">
+          <button type="submit" class="btn btn-primary" 
+            data-loading-text="loading..." >Go</button>
+        </form>
+        <div class="loading">Loading...</div>
+        <div class="error">
+          There was an error loading tweets.<br>Please make sure the username is correct or try again later.
         </div>
-        <div class="tweet row-fluid">
-          <div class="avatar">
-            <img src="img/unknown.png">
-          </div>
-          <div class="info">
-            <p>
-              <span class="name">????</span>
-              <span class="username">‏</span>
-            </p>
-            <p>Uno d nuestros proyectos a destacar en el #TechnologyDay @Geored507, Geosemántica en el país x crowdsourcing</p>
-          </div>
+        <div class="instructions">
+          <i class="icon-arrow-down"></i>
+          Click on each Tweet to select its author
+          <i class="icon-arrow-down"></i>
         </div>
-        <div class="tweet row-fluid">
-          <div class="avatar">
-            <img src="img/unknown.png">
-          </div>
-          <div class="info">
-            <p>Ciudad del Saber ‏@cdspanama</p>
-            <p>Commitment to #bullying prevention in Latin America http://bit.ly/N7XZum @PlanAmericas @unicef_lac @WorldVision</p>
-          </div>
+        <div class="tweets">
         </div>
       </div>
     </div>
   </div>
+  <!-- End Main -->
+
+  <!-- Choose Author -->
+  <div id="chooseAuthor" class="container-fluid">
+    <div class="row-fluid">
+      <div class="well span12">
+        Choose Author 
+      </div>
+    </div>
   </div>
 </body>
 </html>
