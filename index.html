@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Follower Test - How well do you know the people you follow on Twitter?</title>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
   <script type="text/javascript" src="js/jquery.jsonp.js"></script>
   <script type="text/javascript" src="js/bootstrap-dropdown.js"></script>
@@ -11,7 +12,7 @@
   <script type="text/javascript" src="js/game-ui.js"></script>
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css" />
-  <link rel="stylesheet" type="text/css" href="css/followerTest.css" />
+  <link rel="stylesheet" type="text/css" href="css/game.css" />
 </head>
 <body>
   <!-- Navbar -->
@@ -31,8 +32,8 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Language <b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="#">English</a></li>
-                <li><a href="#">Español</a></li>
+                <li><a href="/">English</a></li>
+                <li><a href="/es.html">Español</a></li>
               </ul>
             </li>
           </ul>
@@ -73,7 +74,10 @@
   <div id="chooseAuthor" class="container-fluid">
     <div class="row-fluid">
       <div class="well span12">
-        Choose Author 
+        <div class="item itemContainer row-fluid"></div>
+        <div class="instructions">Who wrote this?</div>
+        <div class="authors">
+        </div>
       </div>
     </div>
   </div>

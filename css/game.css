@@ -41,6 +41,9 @@ form .btn {
   margin:1em 0;
   display: none;
 }
+#chooseAuthor .instructions {
+  display: block;
+}
 .loading {
   color: #777;
 }
@@ -51,50 +54,53 @@ form .btn {
 .instructions {
   font-weight: bold;
 }
-.tweet {
+.item {
   min-height: 51px;
   border-top: 0.1em solid #E8E8E8;
   width: 92%;
   padding: 1em 4%;
 }
-.tweet:hover {
+.item:hover, .item.selected {
   background: #E5E5E5;
   cursor: hand; 
   cursor: pointer;
 }
-.tweet .avatar {
+.item .avatar {
   text-align: center;
   width: 10%;
   float: left;
   padding-top: 0.3em;
 }
-.tweet .avatar img {
+.item .avatar img {
   max-width: 100%;
   border-radius: 5px;
 }
-.tweet .info {
+.item .info {
   float:right;
   width: 88%;
 }
-.tweet .info p {
+.item .info p {
   margin-bottom: 0.2em;
 }
-.tweet .info .name {
+.item .info .name {
   font-weight:bold;
   font-size: 1.1em;
 }
-.tweet .info .username {
+.item .info .username {
   color: #999;
   font-size: 0.97em;
 }
 #chooseAuthor {
   display: none;
 }
+#chooseAuthor .itemContainer:hover {
+  background: none;
+}
 @media (max-width: 480px) { 
-  .tweet .avatar {
+  .item .avatar {
     width: 17%;
   }
-  .tweet .info {
+  .item .info {
     width: 81%;
   }
 }

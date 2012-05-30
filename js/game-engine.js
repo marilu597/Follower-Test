@@ -1,10 +1,17 @@
+window.show_error = function() {
+  $('.loading').hide();
+  $('.error').show();
+  $('.instructions').hide();
+}
+
 window.Game = new function(){
 	this.username = '';
 	this.n_to_select = 5;
+  this.fetch_attempts = 0;
+  this.max_fetch_attempts = 15;
 	this.all_ids;
 	this.selected_ids = [];
 	this.data = [];
-	this.attempts = 0;
 	this.answers = [];
 
   this.start = function(username) {
@@ -23,15 +30,21 @@ window.Game = new function(){
 	};
 
 	this.loadData = function() {
-		if(this.selected_ids.length < this.n_to_select || this.attempts > 15) {
-			this.attempts++;
+		if(this.data.length < this.n_to_select && this.fetch_attempts < this.max_fetch_attempts) {
+			this.fetch_attempts++;
 			var user_id = this.getRandomUserId(this.all_ids, this.selected_ids);
 			var that = this;
 			$.jsonp({
 				url: 'https://api.twitter.com/1/statuses/user_timeline.json?callback=?&count=20&user_id=' + user_id,
 				success: function(result) {
 					var user_data = { user: {}, tweets: [] }
-					user_data.user = {id: result[0].user.id, username: result[0].user.screen_name}
+					user_data.user = {
+            id: result[0].user.id, 
+            name: result[0].user.name,
+            username: result[0].user.screen_name,
+            description: result[0].user.description,
+            avatar_url: result[0].user.profile_image_url
+          }
 					$.each(result, function(index, tweet) {
 						if(tweet.text[0] != '@') {
 							user_data.tweets.push({id: tweet.id, text: tweet.text});
