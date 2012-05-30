@@ -53,8 +53,8 @@ window.load_users = function(data) {
 
   /* Bind Events */
   $('.tweet').click(function(evt) {
-    html = $(evt.target).parents('.item').html();
-    $('#chooseAuthor .itemContainer').html(html);
+    tweet = $(evt.target).parents('.item').clone();
+    $('#chooseAuthor .itemContainer').html(tweet);
     $('#main').slideUp();
     $('#chooseAuthor').slideDown();
   })

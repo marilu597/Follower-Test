@@ -93,8 +93,9 @@ form .btn {
 #chooseAuthor {
   display: none;
 }
-#chooseAuthor .itemContainer:hover {
+#chooseAuthor .tweet:hover {
   background: none;
+  cursor: default;
 }
 @media (max-width: 480px) { 
   .item .avatar {
