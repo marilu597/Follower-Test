@@ -4,86 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
-  <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css" />
+  <script type="text/javascript" src="js/jquery.jsonp.js"></script>
   <script type="text/javascript" src="js/bootstrap-dropdown.js"></script>
   <script type="text/javascript" src="js/bootstrap-collapse.js"></script>
-  <style type="text/css">
-    body {
-      background-image: url('img/bg.png');
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-      background-color: #C0DEED;
-    }
-    .container-fluid {
-      max-width:40em;
-      margin: auto;
-    }
-    .well {
-      padding: 0;
-    }
-    h1 {
-      font-size: 1.5em;
-      text-align: center;
-      margin: 0.4em 0;
-    }
-    form {
-      text-align: center;
-      margin-bottom: 1em;
-    }
-    form label {
-      font-size: 1.4em;
-      display: inline;
-      position: relative;
-      top: -0.15em;
-    }
-    form input[type="text"] {
-      font-size: 1.1em;
-      padding: 0.4em;
-      max-width: 60%;
-    }
-    form .btn {
-      font-size: 1.2em;
-      position: relative;
-      top: -0.28em;
-    }
-    .tweet {
-      min-height: 51px;
-      border-top: 0.1em solid #E8E8E8;
-      width: 92%;
-      padding: 1em 4%;
-    }
-    .tweet .avatar {
-      text-align: center;
-      width: 10%;
-      float: left;
-      padding-top: 0.3em;
-    }
-    .tweet .avatar img {
-      max-width: 100%;
-      border-radius: 5px;
-    }
-    .tweet .info {
-      float:right;
-      width: 88%;
-    }
-    .tweet .info .name {
-      font-weight:bold;
-      font-size: 1.1em;
-    }
-    .tweet .info .username {
-      color: #999;
-      font-size: 0.97em;
-    }
-    @media (max-width: 480px) { 
-      .tweet .avatar {
-        width: 17%;
-      }
-      .tweet .info {
-        width: 81%;
-      }
-    }
-  </style>
+  <script type="text/javascript" src="js/game-engine.js"></script>
+  <script type="text/javascript" src="js/game-ui.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css" />
+  <link rel="stylesheet" type="text/css" href="css/followerTest.css" />
 </head>
 <body>
   <!-- Navbar -->
@@ -126,7 +54,7 @@
       <div class="tweets">
         <div class="tweet row-fluid">
           <div class="avatar">
-            <img src="img/egg.png">
+            <img src="img/unknown.png">
           </div>
           <div class="info">
             <p>
@@ -138,16 +66,19 @@
         </div>
         <div class="tweet row-fluid">
           <div class="avatar">
-            <img src="img/egg.png">
+            <img src="img/unknown.png">
           </div>
           <div class="info">
-            <p>Innovación Panamá ‏@InnovacionPma</p>
+            <p>
+              <span class="name">????</span>
+              <span class="username">‏</span>
+            </p>
             <p>Uno d nuestros proyectos a destacar en el #TechnologyDay @Geored507, Geosemántica en el país x crowdsourcing</p>
           </div>
         </div>
         <div class="tweet row-fluid">
           <div class="avatar">
-            <img src="img/egg.png">
+            <img src="img/unknown.png">
           </div>
           <div class="info">
             <p>Ciudad del Saber ‏@cdspanama</p>
