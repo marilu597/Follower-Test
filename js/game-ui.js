@@ -30,6 +30,9 @@ window.GameUI = function() {
     // Bind to form submission
     $('#index form').on('submit', {gameUI: this}, this.startGame);
 
+    // Bind to grade button
+    $('#index .grade button').on('click', {gameUI:this}, this.grade);
+
     // Bind to tweet click
     $('#index .tweet').live('click', {gameUI: this}, this.showChooseAuthor);
 
@@ -91,6 +94,9 @@ window.GameUI = function() {
     var tweet_id = $('#chooseAuthor .tweet').attr('data-id');
     that.gameEngine.addAnswer(user_id, tweet_id);
     window.location.hash = '';
+    if(that.gameEngine.answersReady()) {
+      $('#index .grade button').addClass('btn-primary').removeClass('disabled')
+    }
   }
 
   this.showErrorMessage = function(evt) {
@@ -121,6 +127,7 @@ window.GameUI = function() {
     $.each(that.gameEngine.data, function(index, user_data) {
       tweet = 
         '<div class="item tweet row-fluid" data-id="' + user_data.tweets[0].id + '">' +
+          '<i class="icon-ok"></i><i class="icon-remove"></i>' +
           '<div class="avatar">' +
             '<img src="img/unknown.png">' +
           '</div>' +
@@ -153,6 +160,8 @@ window.GameUI = function() {
         '</div>'
       $('.authors').append(author);
     })
+
+    $('.grade').show();
   }
 
   this.setTweetAuthor = function(evt, data) {
@@ -174,11 +183,19 @@ window.GameUI = function() {
 
     var author = $('#chooseAuthor .author[data-id="' + answer.user_id + '"]');
     $(author).removeClass('selected');
+
+    $('#index .grade button').removeClass('btn-primary').addClass('disabled')
   }
 
   this.resetTweet = function(tweet) {
     $(tweet).find('img').attr('src', 'img/unknown.png');
     $(tweet).find('.name').html('????');
     $(tweet).find('.username').html('');
+  }
+
+  this.grade = function(evt) {
+    evt.preventDefault();
+    var that = evt.data.gameUI;
+    that.gameEngine.grade();
   }
 }

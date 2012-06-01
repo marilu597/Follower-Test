@@ -58,6 +58,7 @@ form .btn {
   border-top: 0.1em solid #E8E8E8;
   width: 92%;
   padding: 1em 4%;
+  position: relative;
 }
 .item:hover, .item.selected:hover {
   background: #E5E5E5;
@@ -91,6 +92,28 @@ form .btn {
 .item .info .username {
   color: #999;
   font-size: 0.97em;
+}
+.item i {
+  display: none;
+}
+.item.correct {
+  background: #BDFEBB;
+}
+.item.incorrect {
+  background: #EFCFCA;
+}
+.item.correct .icon-ok, .item.incorrect .icon-remove {
+  display: inline;
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+}
+.grade {
+  display: none;
+  text-align: center;
+  border-top: 0.1em solid #E8E8E8;
+  padding-top: 1.5em;
+  padding-bottom: 2em;
 }
 #chooseAuthor {
   display: none;

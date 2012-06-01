@@ -1,6 +1,6 @@
 window.GameEngine = function() {
 	this.username = '';            // Twitter username for current player
-	this.n_tweets = 7;             // Number of tweets to show
+	this.n_tweets = 2;             // Number of tweets to show
   this.fetch_attempts = 0;       // Counter to avoid infinite loops
   this.max_fetch_attempts = 15;  // Max number of attempts before quitting
   this.following_ids = [];       // List of user ids the current player follows on Twitter
@@ -56,7 +56,7 @@ window.GameEngine = function() {
       this.removeAnswer(answer);
     }
     this.answers.push({ user_id: user_id, tweet_id: tweet_id });
-    var user = this.findData(user_id).user
+    var user = this.findData(user_id).user;
     $(this).trigger('addAnswer', {tweet_id: tweet_id, user: user});
   };
 
@@ -87,8 +87,13 @@ window.GameEngine = function() {
   /* Remove Answer */
   this.removeAnswer = function(answer) {
     var tweet_id = answer.tweet_id;
-    this.answers.splice(this.answers.indexOf(answer), 1)
+    this.answers.splice(this.answers.indexOf(answer), 1);
     $(this).trigger('removeAnswer', answer);
+  }
+
+  /* Check if all questions have been answered */
+  this.answersReady = function() {
+    return (this.answers.length == this.n_tweets)
   }
   
   /* Grade Answers */
@@ -106,7 +111,7 @@ window.GameEngine = function() {
         }
       });
     });
-    return correct_ans;
+    alert(correct_ans);
   }
 
   /*************************************************/ 
