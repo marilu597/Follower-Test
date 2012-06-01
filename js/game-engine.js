@@ -22,14 +22,27 @@ window.GameEngine = function() {
     var that = this;
     var following_url = 'https://api.twitter.com/1/friends/ids.json?callback=?' +
                     '&screen_name=' + this.username;
-    var ajax = $.jsonp({
+    $.jsonp({
 			url: following_url,
 			success: function(result) {
         that.following_ids = result.ids;
         that.loadData();
       },
       error: function(xhr) {
-        $(that).trigger('loadFollowingError');
+        var rate_limit_url = 'https://api.twitter.com/1/account/rate_limit_status.json';
+        $.jsonp({
+          url: rate_limit_url,
+          success: function(result) {
+            if(result.hourly_limit == 0) {
+              console.log('rateLimit');
+              $(that).trigger('rateLimitReached');
+            }
+            else {
+              $(that).trigger('loadFollowingError');
+            }
+          },
+          error: function() { $(that).trigger('loadFollowingError'); }
+        })
       }
 		});
 	}

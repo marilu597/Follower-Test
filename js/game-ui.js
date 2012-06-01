@@ -13,7 +13,6 @@ window.GameUI = function() {
   this.gameEngine;
 
   this.start = function() {
-    window.location.hash = '';
     this.gameEngine = new GameEngine(this);
 
     // Bind to hashchange
@@ -28,9 +27,6 @@ window.GameUI = function() {
     $(ge).on('removeAnswer', {gameUI: this}, this.removeAnswer);
     $(ge).on('correctAnswer', {gameUI: this}, this.markCorrect);
     $(ge).on('incorrectAnswer', {gameUI: this}, this.markIncorrect);
-    
-    // Bind to form submission
-    $('#index form').on('submit', {gameUI: this}, this.startGame);
 
     // Bind to grade button
     $('#index .grade button').on('click', {gameUI:this}, this.grade);
@@ -40,6 +36,14 @@ window.GameUI = function() {
 
     // Bind to author click
     $('#chooseAuthor .author').live('click', {gameUI: this}, this.addAnswer);
+
+    // Start
+    $('#index .tweets').empty();
+    $('#chooseAuthor .authors').empty();
+    $('#index .grade button').removeClass('btn-primary').addClass('disabled');
+    $('#index .result').hide();
+    this.showMessage('loading');
+    this.gameEngine.start($('input#screen_name').val().replace('@', ''));
   }
 
   this.route = function(evt) {
@@ -70,14 +74,6 @@ window.GameUI = function() {
         });
         break;
     }
-  }
-
-  this.startGame = function(evt) {
-    evt.preventDefault();
-    var that = evt.data.gameUI;
-    $('.tweets').empty();
-    that.showMessage('loading');
-    that.gameEngine.start($('input#screen_name').val().replace('@', ''));
   }
 
   this.showChooseAuthor = function(evt) {
@@ -223,5 +219,22 @@ window.GameUI = function() {
     var tweet = $('#index .tweet[data-id="' + data.tweet_id + '"]');
     $(tweet).addClass('incorrect');
     $(tweet).append(correct_answer);
+  }
+
+  this.unbindAll = function() {
+    $(window).off('hashchange');
+
+    ge = this.gameEngine;
+    $(ge).off('loadFollowingError');
+    $(ge).off('fetchAttemptsLimit');
+    $(ge).off('dataLoaded');
+    $(ge).off('addAnswer');
+    $(ge).off('removeAnswer');
+    $(ge).off('correctAnswer');
+    $(ge).off('incorrectAnswer');
+
+    $('#index .grade button').off('click');
+    $('#index .tweet').die('click');
+    $('#chooseAuthor .author').die('click');
   }
 }

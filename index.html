@@ -101,9 +101,19 @@
   <!-- End Footer -->
 
   <script type="text/javascript">
+    window.location.hash = '';
     I18n = {correct_answer: 'Correct answer' }
-    gameUI = new GameUI();
-    gameUI.start();
+    $('#index form').submit(function(evt){
+      evt.preventDefault();
+      if(typeof gameUI !== "undefined") {
+        gameUI.unbindAll();
+        delete(gameUI.gameEngine);
+        delete(gameUI);
+      }
+      window.location.hash = '';
+      gameUI = new GameUI();
+      gameUI.start();
+    });
   </script>
 </body>
 </html>
