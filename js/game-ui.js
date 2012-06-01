@@ -243,5 +243,7 @@ window.GameUI = function() {
     $('#index .grade button').off('click');
     $('#index .tweet').die('click');
     $('#chooseAuthor .author').die('click');
+
+    delete(this.gameEngine);
   }
 }

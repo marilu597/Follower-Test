@@ -35,7 +35,6 @@ window.GameEngine = function() {
           url: rate_limit_url,
           success: function(result) {
             if(result.hourly_limit == 0) {
-              console.log('rateLimit');
               $(that).trigger('rateLimitReached');
             }
             else {
