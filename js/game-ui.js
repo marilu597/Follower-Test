@@ -20,6 +20,7 @@ window.GameUI = function() {
 
     // Bind to game engine events
     ge = this.gameEngine;
+    $(ge).on('rateLimitReached', {gameUI: this}, this.showRateLimitMessage);
     $(ge).on('loadFollowingError', {gameUI: this}, this.showErrorMessage);
     $(ge).on('fetchAttemptsLimit', {gameUI: this}, this.showErrorMessage);
     $(ge).on('dataLoaded', {gameUI: this}, this.loadUsers);
@@ -96,6 +97,11 @@ window.GameUI = function() {
       $('#index .grade button').addClass('btn-primary').removeClass('disabled');
       that.showMessage('none');
     }
+  }
+
+  this.showRateLimitMessage = function(evt) {
+    evt.preventDefault();
+    alert('Twitter Rate Limit reached');
   }
 
   this.showErrorMessage = function(evt) {
@@ -225,6 +231,7 @@ window.GameUI = function() {
     $(window).off('hashchange');
 
     ge = this.gameEngine;
+    $(ge).off('rateLimitReached');
     $(ge).off('loadFollowingError');
     $(ge).off('fetchAttemptsLimit');
     $(ge).off('dataLoaded');

@@ -14,6 +14,7 @@ window.GameEngine = function() {
   * - Populates data array with user's info and corresponding tweets
   * Triggers:
   * - 'loadFollowingError' when loading 'following' ids fails
+  * - 'rateLimitReached' when Twitter's rate limit has been reached
   * - 'fetchAttemptsLimit' when max number of fetch attempts reached
   * - 'dataLoaded' on success
   */ 
