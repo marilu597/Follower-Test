@@ -25,7 +25,7 @@ window.GameUI = function() {
     $(ge).on('fetchAttemptsLimit', {gameUI: this}, this.showErrorMessage);
     $(ge).on('dataLoaded', {gameUI: this}, this.loadUsers);
     $(ge).on('addAnswer', {gameUI: this}, this.setTweetAuthor);
-    $(ge).on('removeAnswer', {gameUI: this}, this.resetTweet);
+    $(ge).on('removeAnswer', {gameUI: this}, this.removeAnswer);
     
     // Bind to form submission
     $('#index form').on('submit', {gameUI: this}, this.startGame);
@@ -79,6 +79,7 @@ window.GameUI = function() {
     evt.preventDefault();
     var that = evt.data.gameUI;
     tweet = $(evt.target).closest('.item').clone();
+    that.resetTweet(tweet);
     $('#chooseAuthor .itemContainer').html(tweet);
     window.location.hash = 'chooseAuthor';
   }
@@ -159,12 +160,23 @@ window.GameUI = function() {
     var tweet = $('#index .tweet[data-id="' + data.tweet_id + '"]');
     $(tweet).find('img').attr('src', data.user.avatar_url);
     $(tweet).find('.name').html(data.user.name);
-    $(tweet).find('.username').html(data.user.username);
+    $(tweet).find('.username').html('@' + data.user.username);
+
+    var author = $('#chooseAuthor .author[data-id="' + data.user.id + '"]');
+    $(author).addClass('selected');
   }
 
-  this.resetTweet = function(evt, tweet_id) {
+  this.removeAnswer = function(evt, answer) {
     evt.preventDefault();
-    var tweet = $('#index .tweet[data-id="' + tweet_id + '"]');
+    var that = evt.data.gameUI;
+    var tweet = $('#index .tweet[data-id="' + answer.tweet_id + '"]');
+    that.resetTweet(tweet);
+
+    var author = $('#chooseAuthor .author[data-id="' + answer.user_id + '"]');
+    $(author).removeClass('selected');
+  }
+
+  this.resetTweet = function(tweet) {
     $(tweet).find('img').attr('src', 'img/unknown.png');
     $(tweet).find('.name').html('????');
     $(tweet).find('.username').html('');

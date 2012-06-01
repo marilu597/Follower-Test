@@ -59,10 +59,13 @@ form .btn {
   width: 92%;
   padding: 1em 4%;
 }
-.item:hover, .item.selected {
+.item:hover, .item.selected:hover {
   background: #E5E5E5;
   cursor: hand; 
   cursor: pointer;
+}
+.item.selected {
+  background: #D0D0D0;
 }
 .item .avatar {
   text-align: center;
@@ -95,6 +98,19 @@ form .btn {
 #chooseAuthor .tweet:hover {
   background: none;
   cursor: default;
+}
+#footer {
+  text-align: center;
+  margin-bottom: 1em;
+}
+#footer a {
+  color: #777;
+}
+#footer a:hover {
+  text-decoration: none;
+}
+#footer a:hover .username {
+  text-decoration: underline;
 }
 @media (max-width: 480px) { 
   .item .avatar {
