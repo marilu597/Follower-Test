@@ -1,101 +1,54 @@
-window.show_error = function() {
-  $('.loading').hide();
-  $('.error').show();
-  $('.instructions').hide();
-}
+window.GameEngine = function(gameUI) {
+  this.gameUI = gameUI;          // Game UI
+	this.username = '';            // Twitter username for current player
+	this.n_tweets = 5;             // Number of tweets to show
+  this.fetch_attempts = 0;       // Counter to avoid infinite loops
+  this.max_fetch_attempts = 15;  // Max number of attempts before quitting
+  this.following_ids = [];       // List of user ids the current player follows on Twitter
+	this.data = [];                // Users with their corresponding tweets
+	this.answers = [];             // Currently submitted answers
 
-window.Game = new function(){
-	this.username = '';
-	this.n_to_select = 5;
-  this.fetch_attempts = 0;
-  this.max_fetch_attempts = 15;
-	this.all_ids;
-	this.selected_ids = [];
-	this.data = [];
-	this.answers = [];
-
+  /* Start Game
+  * - Sets the current player's username.
+  * - Fetches all users the current player is 'following' on Twitter.
+  * - Selects random users from 'following' list and fetches their last tweets.
+  * - Populates data array with user's info and corresponding tweets
+  */ 
   this.start = function(username) {
     this.username = username;
     var that = this;
+    following_url = 'https://api.twitter.com/1/friends/ids.json?callback=?' +
+                    '&screen_name=' + this.username;
     $.jsonp({
-			url: 'https://api.twitter.com/1/friends/ids.json?callback=?&screen_name=' + this.username,
+			url: following_url,
 			success: function(result) {
-				that.all_ids = result.ids;
+        that.following_ids = result.ids;
         that.loadData();
       },
       error: function() {
-      	window.show_error();
+      	that.gameUI.show_message('error');
       }
 		});
-	};
+	}
 
-	this.loadData = function() {
-		if(this.data.length < this.n_to_select && this.fetch_attempts < this.max_fetch_attempts) {
-			this.fetch_attempts++;
-			var user_id = this.getRandomUserId(this.all_ids, this.selected_ids);
-			var that = this;
-			$.jsonp({
-				url: 'https://api.twitter.com/1/statuses/user_timeline.json?callback=?&count=20&user_id=' + user_id,
-				success: function(result) {
-					var user_data = { user: {}, tweets: [] }
-					user_data.user = {
-            id: result[0].user.id, 
-            name: result[0].user.name,
-            username: result[0].user.screen_name,
-            description: result[0].user.description,
-            avatar_url: result[0].user.profile_image_url
-          }
-					$.each(result, function(index, tweet) {
-						if(tweet.text[0] != '@') {
-							user_data.tweets.push({id: tweet.id, text: tweet.text});
-						}
-					});
-					if(user_data.tweets.length > 0) {
-						that.selected_ids.push(user_id);
-						that.data.push(user_data);
-					}
-				},
-				complete: function(xhr) {
-					that.loadData();
-				}
-			});
-		}
-		else {
-			window.load_users(this.data);
-		}
-	};
-	
-	this.getRandomUserId = function(user_ids, used) {
-		var length = user_ids.length;
-		var user_id = null;
-		do {
-        var n = Math.floor((Math.random()*length)+1);
-        user_id = user_ids[n];
-        var found = false;
-        for (i = 0; i < used.length; i++) {
-          if (used[i] == user_id) { 
-          	found = true;
-          }
-        }
-    } while (found);
-    return user_id;
-	};
-	
-	this.setAnswer = function(user_id, tweet_id) {
-		this.removeAnswer(user_id);
-		this.answers.push({ user_id: user_id, tweet_id: tweet_id });
-	};
-	
-	this.removeAnswer = function(user_id) {
-	  var that = this;
-		$.each(this.answers, function(index, answer) {
-		  if (answer.user_id == user_id) {
-		    that.answers.splice(index, 1);
-		  }
-		}); 
-	};
-	
-	this.grade = function () {
+  /* Add Answer */
+  this.addAnswer = function(user_id, tweet_id) {
+    this.removeAnswer(user_id);
+    this.answers.push({ user_id: user_id, tweet_id: tweet_id });
+  };
+
+  /* Remove Answer */
+  this.removeAnswer = function(user_id) {
+    var that = this;
+    $.each(this.answers, function(index, answer) {
+      if (answer.user_id == user_id) {
+        that.answers.splice(index, 1);
+      }
+    }); 
+  }
+  
+  /* Grade Answers */
+  this.grade = function () {
     var correct_ans = 0;
     var that = this;
     $.each(this.answers, function(i, answer) {
@@ -110,6 +63,69 @@ window.Game = new function(){
       });
     });
     return correct_ans;
+  }
+
+  /*************************************************/ 
+  /* Private Methods (shouldn't be called directly) 
+  /*************************************************/
+
+  this.loadData = function() {
+    if (this.data.length < this.n_tweets && 
+        this.fetch_attempts < this.max_fetch_attempts) 
+    {
+      this.fetch_attempts++;
+      var user_id = this.getRandomUserId();
+      var that = this;
+      user_tweets_url = 'https://api.twitter.com/1/statuses/user_timeline.json?callback=?&count=20&user_id=' + user_id;
+      $.jsonp({
+        url: user_tweets_url,
+        success: function(result) {
+          var user_data = that.getUserData(result);
+          if(user_data.tweets.length > 0) {
+            that.data.push(user_data);
+          }
+        },
+        complete: function(xhr) {
+          that.loadData();
+        }
+      });
+    }
+    else {
+      this.gameUI.load_users(this.data);
+    }
+  }
+
+  this.getRandomUserId = function() {
+    var user_id = null;
+    do {
+        var n = Math.floor((Math.random()*this.following_ids.length)+1);
+        user_id = this.following_ids[n];
+        var used = false;
+        for (i = 0; i < this.data.length; i++) {
+          if (this.data[i].user.id == user_id) { 
+            used = true;
+            break;
+          }
+        }
+    } while (used);
+    return user_id;
+  }
+
+  this.getUserData = function(result) {
+    var user_data = { user: {}, tweets: [] }
+    user_data.user = {
+      id: result[0].user.id, 
+      name: result[0].user.name,
+      username: result[0].user.screen_name,
+      description: result[0].user.description,
+      avatar_url: result[0].user.profile_image_url
+    }
+    $.each(result, function(index, tweet) {
+      if(tweet.text[0] != '@') { //Avoid tweets that start with a mention
+        user_data.tweets.push({id: tweet.id, text: tweet.text});
+      }
+    });
+    return user_data;
   }
 
 }
