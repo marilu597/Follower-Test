@@ -34,20 +34,61 @@ window.GameEngine = function() {
 		});
 	}
 
+  this.findData = function(user_id) {
+    var found = null;
+    $.each(this.data, function(i, data) {
+      if(data.user.id == user_id) {
+        found = data;
+        return false;
+      }
+    });
+    return found;
+  }
+
   /* Add Answer */
   this.addAnswer = function(user_id, tweet_id) {
-    this.removeAnswer(user_id);
+    answer = this.findAnswerByUser(user_id)
+    if(answer){
+      this.removeAnswer(answer);
+    }
+    answer = this.findAnswerByTweet(tweet_id);
+    if(answer) {
+      this.removeAnswer(answer);
+    }
     this.answers.push({ user_id: user_id, tweet_id: tweet_id });
+    var user = this.findData(user_id).user
+    $(this).trigger('addAnswer', {tweet_id: tweet_id, user: user});
   };
 
-  /* Remove Answer */
-  this.removeAnswer = function(user_id) {
-    var that = this;
-    $.each(this.answers, function(index, answer) {
-      if (answer.user_id == user_id) {
-        that.answers.splice(index, 1);
+  /* Find Answer By User */
+  this.findAnswerByUser = function(user_id) {
+    var found = null;
+    $.each(this.answers, function(i, answer) {
+      if(answer.user_id == user_id) {
+        found = answer;
+        return false;
       }
-    }); 
+    });
+    return found;
+  }
+
+  /* Find Answer By Tweet */
+  this.findAnswerByTweet = function(tweet_id) {
+    var found = null;
+    $.each(this.answers, function(i, answer) {
+      if(answer.tweet_id == tweet_id) {
+        found = answer;
+        return false;
+      }
+    });
+    return found;
+  }
+
+  /* Remove Answer */
+  this.removeAnswer = function(answer) {
+    var tweet_id = answer.tweet_id;
+    this.answers.splice(this.answers.indexOf(answer), 1)
+    $(this).trigger('removeAnswer', tweet_id);
   }
   
   /* Grade Answers */
