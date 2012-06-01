@@ -47,17 +47,6 @@ window.GameEngine = function() {
 		});
 	}
 
-  this.findData = function(user_id) {
-    var found = null;
-    $.each(this.data, function(i, data) {
-      if(data.user.id == user_id) {
-        found = data;
-        return false;
-      }
-    });
-    return found;
-  }
-
   /* Add Answer */
   this.addAnswer = function(user_id, tweet_id) {
     answer = this.findAnswerByUser(user_id)
@@ -69,7 +58,7 @@ window.GameEngine = function() {
       this.removeAnswer(answer);
     }
     this.answers.push({ user_id: user_id, tweet_id: tweet_id });
-    var user = this.findData(user_id).user;
+    var user = this.findDataByUser(user_id).user;
     $(this).trigger('addAnswer', {tweet_id: tweet_id, user: user});
   };
 
@@ -114,26 +103,15 @@ window.GameEngine = function() {
     var correct_ans = 0;
     var that = this;
     $.each(this.answers, function(i, answer) {
-      $.each(that.data, function(j, user_data) {
-        if (user_data.user.id == answer.user_id) {
-          var correct = false;
-          $.each(user_data.tweets, function(k, tweet) {
-            if(answer.tweet_id == tweet.id) {
-              correct = true;
-              return false;
-            }
-          });
-          if(correct) {
-            correct_ans++;
-            $(that).trigger('correctAnswer', {tweet_id: answer.tweet_id});
-          }
-          else {
-            $(that).trigger('incorrectAnswer', {tweet_id: answer.tweet_id,
-              correct_user: user_data.user});
-          }
-          return false;
-        }
-      });
+      var data = that.findDataByTweet(answer.tweet_id);
+      if(data.user.id == answer.user_id) {
+        correct_ans++;
+        $(that).trigger('correctAnswer', {tweet_id: answer.tweet_id});
+      }
+      else {
+        $(that).trigger('incorrectAnswer', {tweet_id: answer.tweet_id,
+          correct_user: data.user});
+      }
     });
     return correct_ans;
   }
@@ -170,6 +148,33 @@ window.GameEngine = function() {
     else {
       $(this).trigger('dataLoaded');
     }
+  }
+
+  this.findDataByUser = function(user_id) {
+    var found = null;
+    $.each(this.data, function(i, data) {
+      if(data.user.id == user_id) {
+        found = data;
+        return false;
+      }
+    });
+    return found;
+  }
+
+  this.findDataByTweet = function(tweet_id) {
+    var found = null;
+    $.each(this.data, function(i, data) {
+      $.each(data.tweets, function(j, tweet) {
+        if(tweet.id == tweet_id) {
+          found = data;
+          return false;
+        }
+      });
+      if(found) {
+        return false;
+      }
+    });
+    return found;
   }
 
   this.getRandomUserId = function() {
