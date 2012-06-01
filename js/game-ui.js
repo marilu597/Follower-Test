@@ -11,9 +11,17 @@ Array.prototype.shuffle = function() {
 
 window.GameUI = function() {
   this.gameEngine;
-  
+
   this.start = function() {
     this.gameEngine = new GameEngine(this);
+
+    // Bind to game engine events
+    ge = this.gameEngine;
+    $(ge).on('loadFollowingError', {gameUI: this}, this.showErrorMessage);
+    $(ge).on('fetchAttemptsLimit', {gameUI: this}, this.showErrorMessage);
+    $(ge).on('dataLoaded', {gameUI: this}, this.loadUsers);
+    
+    // Bind to form submission
     var that = this;
     $('form').submit(function(evt) {
       evt.preventDefault();
@@ -21,6 +29,10 @@ window.GameUI = function() {
       that.showMessage('loading');
       that.gameEngine.start($('input#screen_name').val());
     });
+  }
+
+  this.showErrorMessage = function(evt) {
+    evt.data.gameUI.showMessage('error');
   }
 
   this.showMessage = function(name) {
@@ -37,11 +49,25 @@ window.GameUI = function() {
     }
   }
 
-  this.load_users = function(data) {
-    this.showMessage('instructions');
+  this.showWindow = function(windowName, callback) {
+    $('#main').hide();
+    $('#chooseAuthor').hide();
+    switch(windowName) {
+      case 'index':
+        window.location.hash = '';
+        $('#main').fadeIn('normal', callback); break;
+      case 'chooseAuthor':
+        window.location.hash = '#chooseAuthor';
+        $('#chooseAuthor').fadeIn('normal', callback); break;
+    }
+  }
+
+  this.loadUsers = function(evt) {
+    var that = evt.data.gameUI;
+    that.showMessage('instructions');
 
     /* Load Tweets */
-    $.each(data, function(index, user_data) {
+    $.each(that.gameEngine.data, function(index, user_data) {
       tweet = 
         '<div class="item tweet row-fluid" data-id="' + user_data.tweets[0].id + '">' +
           '<div class="avatar">' +
@@ -58,10 +84,10 @@ window.GameUI = function() {
       $('.tweets').append(tweet);
     });
     
-    data.shuffle();
+    that.gameEngine.data.shuffle();
 
     /* Load Authors */
-    $.each(data, function(index, user_data) {
+    $.each(that.gameEngine.data, function(index, user_data) {
       author = '<div class="item author row-fluid" data-id="' + user_data.user.id + '">' +
           '<div class="avatar">' +
             '<img src="' + user_data.user.avatar_url + '">' +
@@ -79,15 +105,13 @@ window.GameUI = function() {
 
     /* Bind Events */
     $('.tweet').click(function(evt) {
-      tweet = $(evt.target).parents('.item').clone();
+      tweet = $(evt.target).closest('.item').clone();
       $('#chooseAuthor .itemContainer').html(tweet);
-      $('#main').slideUp();
-      $('#chooseAuthor').slideDown();
-    })
+      that.showWindow('chooseAuthor', function() {
+        $(window).one('hashchange', function() {
+          that.showWindow('index');
+        });
+      });
+    });
   }
 }
-
-$('document').ready(function() {
-  gameUI = new window.GameUI();
-  gameUI.start();
-});

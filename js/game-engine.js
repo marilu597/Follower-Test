@@ -1,5 +1,4 @@
-window.GameEngine = function(gameUI) {
-  this.gameUI = gameUI;          // Game UI
+window.GameEngine = function() {
 	this.username = '';            // Twitter username for current player
 	this.n_tweets = 5;             // Number of tweets to show
   this.fetch_attempts = 0;       // Counter to avoid infinite loops
@@ -13,6 +12,10 @@ window.GameEngine = function(gameUI) {
   * - Fetches all users the current player is 'following' on Twitter.
   * - Selects random users from 'following' list and fetches their last tweets.
   * - Populates data array with user's info and corresponding tweets
+  * Triggers:
+  * - 'loadFollowingError' when loading 'following' ids fails
+  * - 'fetchAttemptsLimit' when max number of fetch attempts reached
+  * - 'dataLoaded' on success
   */ 
   this.start = function(username) {
     this.username = username;
@@ -26,7 +29,7 @@ window.GameEngine = function(gameUI) {
         that.loadData();
       },
       error: function() {
-      	that.gameUI.show_message('error');
+        $(that).trigger('loadFollowingError');
       }
 		});
 	}
@@ -70,10 +73,14 @@ window.GameEngine = function(gameUI) {
   /*************************************************/
 
   this.loadData = function() {
-    if (this.data.length < this.n_tweets && 
-        this.fetch_attempts < this.max_fetch_attempts) 
-    {
+    if(this.fetch_attempts >= this.max_fetch_attempts) {
+      $(this).trigger('fetchAttemptsLimit'); 
+      return;
+    }
+    else {
       this.fetch_attempts++;
+    }
+    if(this.data.length < this.n_tweets) {
       var user_id = this.getRandomUserId();
       var that = this;
       user_tweets_url = 'https://api.twitter.com/1/statuses/user_timeline.json?callback=?&count=20&user_id=' + user_id;
@@ -91,7 +98,7 @@ window.GameEngine = function(gameUI) {
       });
     }
     else {
-      this.gameUI.load_users(this.data);
+      $(this).trigger('dataLoaded');
     }
   }
 
