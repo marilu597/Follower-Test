@@ -20,15 +20,15 @@ window.GameEngine = function() {
   this.start = function(username) {
     this.username = username;
     var that = this;
-    following_url = 'https://api.twitter.com/1/friends/ids.json?callback=?' +
+    var following_url = 'https://api.twitter.com/1/friends/ids.json?callback=?' +
                     '&screen_name=' + this.username;
-    $.jsonp({
+    var ajax = $.jsonp({
 			url: following_url,
 			success: function(result) {
         that.following_ids = result.ids;
         that.loadData();
       },
-      error: function() {
+      error: function(xhr) {
         $(that).trigger('loadFollowingError');
       }
 		});
@@ -101,17 +101,28 @@ window.GameEngine = function() {
     var correct_ans = 0;
     var that = this;
     $.each(this.answers, function(i, answer) {
-      $.each(that.data, function(j, person) {
-        if (person.user.id == answer.user_id) {
-          $.each(person.tweets, function(k, tweet) {
+      $.each(that.data, function(j, user_data) {
+        if (user_data.user.id == answer.user_id) {
+          var correct = false;
+          $.each(user_data.tweets, function(k, tweet) {
             if(answer.tweet_id == tweet.id) {
-              correct_ans++;
+              correct = true;
+              return false;
             }
           });
+          if(correct) {
+            correct_ans++;
+            $(that).trigger('correctAnswer', {tweet_id: answer.tweet_id});
+          }
+          else {
+            $(that).trigger('incorrectAnswer', {tweet_id: answer.tweet_id,
+              correct_user: user_data.user});
+          }
+          return false;
         }
       });
     });
-    alert(correct_ans);
+    return correct_ans;
   }
 
   /*************************************************/ 

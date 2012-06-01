@@ -108,12 +108,30 @@ form .btn {
   top: 0.5em;
   right: 0.5em;
 }
+.item.correct:hover, .item.incorrect:hover {
+  cursor: default;
+}
+.item .correct_answer {
+  clear: both;
+  padding-top: 1em;
+  text-align: center;
+  font-weight: bold;
+  color: #CB1C1C;
+}
 .grade {
   display: none;
   text-align: center;
   border-top: 0.1em solid #E8E8E8;
   padding-top: 1.5em;
   padding-bottom: 2em;
+}
+.result {
+  display: none;
+  text-align: center;
+  margin: 1.5em 0;
+}
+.result p:first-child{
+  font-size: 1.3em;
 }
 #chooseAuthor {
   display: none;

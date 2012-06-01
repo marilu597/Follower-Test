@@ -26,6 +26,8 @@ window.GameUI = function() {
     $(ge).on('dataLoaded', {gameUI: this}, this.loadUsers);
     $(ge).on('addAnswer', {gameUI: this}, this.setTweetAuthor);
     $(ge).on('removeAnswer', {gameUI: this}, this.removeAnswer);
+    $(ge).on('correctAnswer', {gameUI: this}, this.markCorrect);
+    $(ge).on('incorrectAnswer', {gameUI: this}, this.markIncorrect);
     
     // Bind to form submission
     $('#index form').on('submit', {gameUI: this}, this.startGame);
@@ -95,7 +97,8 @@ window.GameUI = function() {
     that.gameEngine.addAnswer(user_id, tweet_id);
     window.location.hash = '';
     if(that.gameEngine.answersReady()) {
-      $('#index .grade button').addClass('btn-primary').removeClass('disabled')
+      $('#index .grade button').addClass('btn-primary').removeClass('disabled');
+      that.showMessage('none');
     }
   }
 
@@ -185,6 +188,7 @@ window.GameUI = function() {
     $(author).removeClass('selected');
 
     $('#index .grade button').removeClass('btn-primary').addClass('disabled')
+    that.showMessage('instructions');
   }
 
   this.resetTweet = function(tweet) {
@@ -196,6 +200,28 @@ window.GameUI = function() {
   this.grade = function(evt) {
     evt.preventDefault();
     var that = evt.data.gameUI;
-    that.gameEngine.grade();
+    $('#index .grade').hide();
+    $('#index .tweet').die('click');
+    $('#index .result .correct').html(that.gameEngine.grade());
+    $('#index .result .total').html(that.gameEngine.n_tweets);
+    $('#index .result').show();
+  }
+
+  this.markCorrect = function(evt, data) {
+    evt.preventDefault();
+    var tweet = $('#index .tweet[data-id="' + data.tweet_id + '"]');
+    $(tweet).addClass('correct');
+  }
+
+  this.markIncorrect = function(evt, data) {
+    evt.preventDefault();
+    correct_answer = 
+      '<div class="correct_answer">' + 
+        I18n.correct_answer + ': ' + 
+        data.correct_user.name + ' @' + data.correct_user.username +
+      '</div>'
+    var tweet = $('#index .tweet[data-id="' + data.tweet_id + '"]');
+    $(tweet).addClass('incorrect');
+    $(tweet).append(correct_answer);
   }
 }
