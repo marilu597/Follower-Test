@@ -1,6 +1,6 @@
 window.GameEngine = function() {
 	this.username = '';            // Twitter username for current player
-	this.n_tweets = 2;             // Number of tweets to show
+	this.n_tweets = 7;             // Number of tweets to show
   this.fetch_attempts = 0;       // Counter to avoid infinite loops
   this.max_fetch_attempts = 15;  // Max number of attempts before quitting
   this.following_ids = [];       // List of user ids the current player follows on Twitter
@@ -30,11 +30,11 @@ window.GameEngine = function() {
         that.loadData();
       },
       error: function(xhr) {
-        var rate_limit_url = 'https://api.twitter.com/1/account/rate_limit_status.json';
+        var rate_limit_url = 'https://api.twitter.com/1/account/rate_limit_status.json?callback=?';
         $.jsonp({
           url: rate_limit_url,
           success: function(result) {
-            if(result.hourly_limit == 0) {
+            if(result.remaining_hits == 0) {
               $(that).trigger('rateLimitReached');
             }
             else {

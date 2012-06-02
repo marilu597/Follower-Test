@@ -101,7 +101,7 @@ window.GameUI = function() {
 
   this.showRateLimitMessage = function(evt) {
     evt.preventDefault();
-    alert('Twitter Rate Limit reached');
+    evt.data.gameUI.showMessage('rateLimit');
   }
 
   this.showErrorMessage = function(evt) {
@@ -112,6 +112,7 @@ window.GameUI = function() {
   this.showMessage = function(name) {
     $('.loading').hide();
     $('.error').hide();
+    $('.rateLimit').hide();
     $('#index .instructions').hide();
     switch(name) {
       case 'loading':
@@ -120,6 +121,8 @@ window.GameUI = function() {
         $('.error').show(); break;
       case 'instructions':
         $('#index .instructions').show(); break;
+      case 'rateLimit':
+        $('.rateLimit').show(); break;
     }
   }
 
@@ -167,9 +170,7 @@ window.GameUI = function() {
     })
 
     $('.grade').show();
-    if(document.location.host != 'localhost') {
-      $('.adsense').show();
-    }
+    $('.adsense').show();
   }
 
   this.setTweetAuthor = function(evt, data) {

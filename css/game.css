@@ -1,6 +1,4 @@
 body {
-  background-image: url('/img/bg.png');
-  background-repeat: no-repeat;
   background-color: #C0DEED;
 }
 .container-fluid {
@@ -35,9 +33,9 @@ form .btn {
   position: relative;
   top: -0.28em;
 }
-.loading, .error, .instructions {
+.loading, .error, .instructions, .rateLimit {
   text-align: center;
-  margin:1em 0;
+  margin:1em;
   display: none;
 }
 #chooseAuthor .instructions {
@@ -148,6 +146,8 @@ form .btn {
   text-align: center;
   border-top: 0.1em solid #E8E8E8;
   padding: 2.5em 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 #chooseAuthor {
   display: none;
