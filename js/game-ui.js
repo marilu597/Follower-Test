@@ -214,7 +214,7 @@ window.GameUI = function() {
     share_result = I18n.share_result.replace('{correct}', correct)
       .replace('{total}', total);
     web_intent = $('#index .result .share a');
-    web_intent.attr('href', web_intent.attr('href') + 
+    web_intent.attr('href', web_intent.attr('data-url') + 
       encodeURIComponent(share_result));
     $('#index .result').show();
   }
