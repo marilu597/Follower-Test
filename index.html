@@ -87,6 +87,10 @@
             You guessed <span class="correct"></span> out of 
             <span class="total"></span>!
           </p>
+          <p class="share">
+            <a href="https://twitter.com/intent/tweet?text="
+              class="btn">Share your result</a>
+          </p>
         </div>
       </div>
     </div>
@@ -108,16 +112,26 @@
 
   <!-- Footer -->
   <div id="footer">
-    <a href="http://twitter.com/trisfera", target="_blank">
-      Developed by <span class="username">@Trisfera</span>
-    </a>
+    <p>
+      <a href="http://twitter.com/trisfera", target="_blank">
+        Developed by <span class="username">@Trisfera</span>
+      </a>
+    </p>
+    <p>
+      <a href="https://twitter.com/share" class="twitter-share-button" 
+      data-lang="en" data-url="http://followertest.com" 
+      data-text="How well do you know the people you follow? Take the #followerTest and find out!" data-related="Trisfera">Tweet</a>
+    </p>
   </div>
   <!-- End Footer -->
 
   <!-- Start App -->
   <script type="text/javascript">
     window.location.hash = '';
-    I18n = {correct_answer: 'Correct answer' }
+    I18n = {
+      correct_answer: 'Correct answer',
+      share_result: 'I just scored {correct} out of {total} in the #followerTest! Take the test and find out how well you know the people you follow. http://followertest.com'
+    }
     $('#index form').submit(function(evt){
       evt.preventDefault();
       if(typeof gameUI !== "undefined") {
@@ -145,5 +159,9 @@
     }
   </script>
   <!--End Google Analytics -->
+
+  <!-- Tweet Button Code -->
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+  <!-- End Tweet Button Code -->
 </body>
 </html>

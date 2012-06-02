@@ -207,8 +207,15 @@ window.GameUI = function() {
     var that = evt.data.gameUI;
     $('#index .grade').hide();
     $('#index .tweet').die('click');
-    $('#index .result .correct').html(that.gameEngine.grade());
-    $('#index .result .total').html(that.gameEngine.n_tweets);
+    var correct = that.gameEngine.grade();
+    var total = that.gameEngine.n_tweets
+    $('#index .result .correct').html(correct);
+    $('#index .result .total').html(total);
+    share_result = I18n.share_result.replace('{correct}', correct)
+      .replace('{total}', total);
+    web_intent = $('#index .result .share a');
+    web_intent.attr('href', web_intent.attr('href') + 
+      encodeURIComponent(share_result));
     $('#index .result').show();
   }
 

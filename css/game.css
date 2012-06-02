@@ -134,6 +134,13 @@ form .btn {
 .result p:first-child{
   font-size: 1.3em;
 }
+.result .share {
+  margin-top: 1em;
+}
+.result .share a {
+  background: url('http://a4.twimg.com/images/favicon.ico') 3px center no-repeat;
+  padding-left: 22px;
+}
 .adsense {
   display: none;
   text-align: center;
@@ -159,6 +166,9 @@ form .btn {
 }
 #footer a:hover .username {
   text-decoration: underline;
+}
+#footer p {
+  margin-bottom: 1.5em;
 }
 
 @media (max-width: 480px) { 
