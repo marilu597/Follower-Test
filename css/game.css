@@ -128,10 +128,17 @@ form .btn {
 .result {
   display: none;
   text-align: center;
-  margin: 1.5em 0;
+  border-top: 0.1em solid #E8E8E8;
+  padding: 1.5em 0;
 }
 .result p:first-child{
   font-size: 1.3em;
+}
+.adsense {
+  display: none;
+  text-align: center;
+  border-top: 0.1em solid #E8E8E8;
+  padding: 2.5em 0;
 }
 #chooseAuthor {
   display: none;
@@ -153,6 +160,7 @@ form .btn {
 #footer a:hover .username {
   text-decoration: underline;
 }
+
 @media (max-width: 480px) { 
   .item .avatar {
     width: 17%;

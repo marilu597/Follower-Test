@@ -167,6 +167,9 @@ window.GameUI = function() {
     })
 
     $('.grade').show();
+    if(document.location.host != 'localhost') {
+      $('.adsense').show();
+    }
   }
 
   this.setTweetAuthor = function(evt, data) {
