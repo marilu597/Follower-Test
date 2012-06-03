@@ -104,7 +104,13 @@ window.GameEngine = function() {
 
   this.loadDataUsingTwitterAnywhere = function() {
     var that = this;
-    this.twitterCurrentUser.homeTimeline({count: this.n_tweets}).each(function(tweet) {
+    this.twitterCurrentUser.homeTimeline({count: 50}).each(function(tweet) {
+      if(that.data.length >= that.n_tweets) {
+        return null;
+      }
+      if(tweet.text[0] == '@' || that.findDataByUser(tweet.user.attributes.id)) {
+        return null;
+      }
       var user_data = { 
         user: {
           id: tweet.user.attributes.id, 
@@ -118,7 +124,6 @@ window.GameEngine = function() {
       that.data.push(user_data);
       if(that.data.length >= that.n_tweets) {
         $(that).trigger('dataLoaded');
-        return false;
       }
     });
   }
