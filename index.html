@@ -11,6 +11,18 @@
   <script type="text/javascript" src="js/game-engine.js"></script>
   <script type="text/javascript" src="js/game-ui.js"></script>
   <script src="http://platform.twitter.com/anywhere.js?id=35HvGxgPCLFn4TUbP90A&v=1" type="text/javascript"></script>
+  <script type="text/javascript">
+    twttr.anywhere(function (T) {
+      T.bind("authComplete", function (e, user) {
+        // triggered when auth completed successfully
+        window.location.reload()
+      });
+      T.bind("signOut", function (e) {
+        // triggered when user logs out
+        window.location.reload()
+      });
+    });
+  </script>
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css" />
   <link rel="stylesheet" type="text/css" href="css/game.css" />
@@ -50,22 +62,56 @@
       <div class="well span12">
         <h1>How well do you know the people you follow?</h1>
         <form accept-charset="UTF-8">
-          <label for="screen_name">@</label>
-          <input id="screen_name" name="screen_name" placeholder="Enter your username" size="30" type="text" required="required">
-          <button type="submit" class="btn btn-primary" 
-            data-loading-text="loading..." >Go</button>
+          <script type="text/javascript">
+            twttr.anywhere(function (T) {
+              if (T.isConnected()) {
+                $('form').prepend(
+                  '<input type="hidden" name="login" value="true">' +
+                  '<label for="screen_name">@</label>' +
+                  '<input id="screen_name" name="screen_name" ' +
+                    'value="' + T.currentUser.data('screen_name') + '" ' + 
+                    'size="30" type="text" disabled="disabled">'
+                )
+                $('form').append(
+                  '<div>' +
+                    '<button id="signout" type="btn">Sign out of Twitter</button>' +
+                  '</div>'
+                );
+                $("#signout").bind('click', function (evt) {
+                  evt.preventDefault();
+                  twttr.anywhere.signOut();
+                });
+              }
+              else {
+                $('form').prepend(
+                  '<label for="screen_name">@</label>' +
+                  '<input id="screen_name" name="screen_name"' +
+                    'placeholder="Enter your username" size="30" type="text"' +
+                    'required="required">'
+                )
+              }
+              $('.loading').hide();
+              $('form button').show();
+            });
+          </script>
+          <button type="submit" class="btn btn-primary">Go</button>
         </form>
         <div class="loading">Loading...</div>
         <div class="error">
           There was an error loading tweets.<br>Please make sure the username is correct or try again later.
         </div>
         <div class="rateLimit">
-          <p>You have reached the <a href="https://dev.twitter.com/docs/rate-limiting">Twitter Rate Limit</a>.<br>
-          In order to continue playing, you must login with your Twitter account.</p>
+          <p>You have reached the <a href="https://dev.twitter.com/docs/rate-limiting">Twitter Rate Limit</a>.</p>
           <p><span id="login"></span></p>
           <script type="text/javascript">
             twttr.anywhere(function (T) {
-              T("#login").connectButton();
+              if (T.isConnected()) {
+                $('.rateLimit p:first').append('<br>In order to continue playing, you must login with another Twitter account or wait until your rate is reset.');
+              }
+              else {
+                $('.rateLimit p:first').append('<br>In order to continue playing, you must login with your Twitter account.');
+                T("#login").connectButton();
+              }
             });
           </script>
         </div>
@@ -114,6 +160,21 @@
     <div class="row-fluid">
       <div class="well span12">
         <div class="itemContainer"></div>
+        <!-- Google Adsense 2 -->
+        <div class="adsense">
+          <script type="text/javascript"><!--
+            google_ad_client = "ca-pub-3178916399077763";
+            /* FollowerTest2 */
+            google_ad_slot = "5050864362";
+            google_ad_width = 468;
+            google_ad_height = 60;
+            //-->
+          </script>
+          <script type="text/javascript"
+            src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+          </script>
+        </div>
+        <!-- End Google Adsense 2 -->
         <div class="instructions">Who wrote this?</div>
         <div class="authors">
         </div>
@@ -158,17 +219,15 @@
 
   <!-- Google Analytics -->
   <script type="text/javascript">
-    if(document.location.host != 'localhost') {
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-12739495-4']);
-      _gaq.push(['_trackPageview']);
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-12739495-4']);
+    _gaq.push(['_trackPageview']);
 
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-    }
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
   </script>
   <!--End Google Analytics -->
 
