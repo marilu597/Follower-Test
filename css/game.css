@@ -42,6 +42,9 @@ form .btn {
 .loading {
   display: block;
 }
+#signout {
+  margin: 1em;
+}
 #chooseAuthor .instructions {
   display: block;
 }

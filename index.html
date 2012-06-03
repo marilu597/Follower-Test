@@ -62,38 +62,6 @@
       <div class="well span12">
         <h1>How well do you know the people you follow?</h1>
         <form accept-charset="UTF-8">
-          <script type="text/javascript">
-            twttr.anywhere(function (T) {
-              if (T.isConnected()) {
-                $('form').prepend(
-                  '<input type="hidden" name="login" value="true">' +
-                  '<label for="screen_name">@</label>' +
-                  '<input id="screen_name" name="screen_name" ' +
-                    'value="' + T.currentUser.data('screen_name') + '" ' + 
-                    'size="30" type="text" disabled="disabled">'
-                )
-                $('form').append(
-                  '<div>' +
-                    '<button id="signout" type="btn">Sign out of Twitter</button>' +
-                  '</div>'
-                );
-                $("#signout").bind('click', function (evt) {
-                  evt.preventDefault();
-                  twttr.anywhere.signOut();
-                });
-              }
-              else {
-                $('form').prepend(
-                  '<label for="screen_name">@</label>' +
-                  '<input id="screen_name" name="screen_name"' +
-                    'placeholder="Enter your username" size="30" type="text"' +
-                    'required="required">'
-                )
-              }
-              $('.loading').hide();
-              $('form button').show();
-            });
-          </script>
           <button type="submit" class="btn btn-primary">Go</button>
         </form>
         <div class="loading">Loading...</div>
@@ -103,17 +71,6 @@
         <div class="rateLimit">
           <p>You have reached the <a href="https://dev.twitter.com/docs/rate-limiting">Twitter Rate Limit</a>.</p>
           <p><span id="login"></span></p>
-          <script type="text/javascript">
-            twttr.anywhere(function (T) {
-              if (T.isConnected()) {
-                $('.rateLimit p:first').append('<br>In order to continue playing, you must login with another Twitter account or wait until your rate is reset.');
-              }
-              else {
-                $('.rateLimit p:first').append('<br>In order to continue playing, you must login with your Twitter account.');
-                T("#login").connectButton();
-              }
-            });
-          </script>
         </div>
         <div class="instructions">
           <i class="icon-arrow-down"></i>
@@ -155,6 +112,47 @@
   </div>
   <!-- End Index -->
 
+  <!-- Check if user connected Twitter -->
+  <script type="text/javascript">
+    twttr.anywhere(function (T) {
+      if (T.isConnected()) {
+        window.twitterCurrentUser = T.currentUser;
+        $('form').prepend(
+          '<input type="hidden" id="loggedOnTwitter"' + 
+           'name="loggedOnTwitter" value="true">' +
+          '<label for="screen_name">@</label>' +
+          '<input id="screen_name" name="screen_name" ' +
+            'value="' + T.currentUser.data('screen_name') + '" ' + 
+            'size="30" type="text" disabled="disabled">'
+        )
+        $('form').append(
+          '<div>' +
+            '<button id="signout" type="btn">Sign Out</button>' +
+          '</div>'
+        );
+        $("#signout").bind('click', function (evt) {
+          evt.preventDefault();
+          twttr.anywhere.signOut();
+        });
+        $('.rateLimit p:first').append('<br>In order to continue playing, you must login with another Twitter account or wait until your rate is reset.');
+      }
+      else {
+        window.twitterCurrentUser = null;
+        $('form').prepend(
+          '<label for="screen_name">@</label>' +
+          '<input id="screen_name" name="screen_name"' +
+            'placeholder="Enter your username" size="30" type="text"' +
+            'required="required">'
+        )
+        $('.rateLimit p:first').append('<br>In order to continue playing, you must login with your Twitter account.');
+        T("#login").connectButton();
+      }
+      $('.loading').hide();
+      $('form button').show();
+    });
+  </script>
+  <!-- End Check if user connected Twitter -->
+
   <!-- Choose Author -->
   <div id="chooseAuthor" class="container-fluid">
     <div class="row-fluid">
@@ -190,11 +188,6 @@
         Developed by <span class="username">@Trisfera</span>
       </a>
     </p>
-    <p>
-      <a href="https://twitter.com/share" class="twitter-share-button" 
-      data-lang="en" data-url="http://followertest.com" 
-      data-text="How well do you know the people you follow? Take the #followerTest and find out!" data-related="Trisfera">Tweet</a>
-    </p>
   </div>
   <!-- End Footer -->
 
@@ -207,12 +200,14 @@
     }
     $('#index form').submit(function(evt){
       evt.preventDefault();
+      // Delete last game 
       if(typeof gameUI !== "undefined") {
         gameUI.unbindAll();
         delete(gameUI);
       }
+      // Start new
       window.location.hash = '';
-      gameUI = new GameUI();
+      gameUI = new GameUI(window.twitterCurrentUser);
       gameUI.start();
     });
   </script>

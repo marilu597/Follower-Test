@@ -9,7 +9,7 @@ Array.prototype.shuffle = function() {
   }
 }
 
-window.GameUI = function() {
+window.GameUI = function(twitterCurrentUser) {
   this.gameEngine;
 
   this.start = function() {
@@ -44,7 +44,9 @@ window.GameUI = function() {
     $('#index .grade button').removeClass('btn-primary').addClass('disabled');
     $('#index .result').hide();
     this.showMessage('loading');
-    this.gameEngine.start($('input#screen_name').val().replace('@', ''));
+
+    var username = $('#screen_name').val().replace('@', '');
+    this.gameEngine.start(username, twitterCurrentUser);
   }
 
   this.route = function(evt) {
@@ -133,8 +135,9 @@ window.GameUI = function() {
 
     /* Load Tweets */
     $.each(that.gameEngine.data, function(index, user_data) {
+      var n = Math.floor((Math.random()*user_data.tweets.length));
       tweet = 
-        '<div class="item tweet row-fluid" data-id="' + user_data.tweets[0].id + '">' +
+        '<div class="item tweet row-fluid" data-id="' + user_data.tweets[n].id + '">' +
           '<i class="icon-ok"></i><i class="icon-remove"></i>' +
           '<div class="avatar">' +
             '<img src="img/unknown.png">' +
@@ -144,7 +147,7 @@ window.GameUI = function() {
               '<span class="name">????</span> ' +
               '<span class="username">‏</span>' +
             '</p>' +
-            '<p>' + user_data.tweets[0].text + '</p>' +
+            '<p>' + user_data.tweets[n].text + '</p>' +
           '</div>' +
         '</div>'
       $('.tweets').append(tweet);

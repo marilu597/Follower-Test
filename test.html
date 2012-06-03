@@ -33,31 +33,11 @@
 <span id="twitter-connect-placeholder"></span>
 <div id="timeline"></div>
 <script type="text/javascript">
-   
-    twttr.anywhere(function (T) {
-   
-      var currentUser,
-          screenName,
-          profileImage,
-          profileImageTag;
-   
-      if (T.isConnected()) {
-        currentUser = T.currentUser;
-        screenName = currentUser.data('screen_name');
-        profileImage = currentUser.data('profile_image_url');
-        profileImageTag = "<img src='" + profileImage + "'/>";
-        $('#twitter-connect-placeholder').append("Logged in as " + profileImageTag + " " + screenName);
-      } else {
-        T("#twitter-connect-placeholder").connectButton();
-      };
-   
-    });
-
 
   twttr.anywhere(function (T) {
     $('#timeline').html('');
     window.T = T;
-    T.currentUser.homeTimeline({count: 200, max_id: 208794428956082180}).each(function(status) {
+    T.currentUser.homeTimeline({count: 5, max_id: 208794428956082180}).each(function(status) {
       $('#timeline').append('<div><p>' + status.id + '</p><p>' + status.text + '</p></div>')
     });
   });

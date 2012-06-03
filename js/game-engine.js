@@ -18,33 +18,15 @@ window.GameEngine = function() {
   * - 'fetchAttemptsLimit' when max number of fetch attempts reached
   * - 'dataLoaded' on success
   */ 
-  this.start = function(username) {
+  this.start = function(username, twitterCurrentUser) {
     this.username = username;
-    var that = this;
-    var following_url = 'https://api.twitter.com/1/friends/ids.json?callback=?' +
-                    '&screen_name=' + this.username;
-    $.jsonp({
-			url: following_url,
-			success: function(result) {
-        that.following_ids = result.ids;
-        that.loadData();
-      },
-      error: function(xhr) {
-        var rate_limit_url = 'https://api.twitter.com/1/account/rate_limit_status.json?callback=?';
-        $.jsonp({
-          url: rate_limit_url,
-          success: function(result) {
-            if(result.remaining_hits == 0) {
-              $(that).trigger('rateLimitReached');
-            }
-            else {
-              $(that).trigger('loadFollowingError');
-            }
-          },
-          error: function() { $(that).trigger('loadFollowingError'); }
-        })
-      }
-		});
+    this.twitterCurrentUser = twitterCurrentUser;
+    if (twitterCurrentUser) {
+      this.loadDataUsingTwitterAnywhere();
+    }
+    else {
+      this.loadDataUsingPublicAPI();
+    }
 	}
 
   /* Add Answer */
@@ -120,6 +102,55 @@ window.GameEngine = function() {
   /* Private Methods (shouldn't be called directly) 
   /*************************************************/
 
+  this.loadDataUsingTwitterAnywhere = function() {
+    var that = this;
+    this.twitterCurrentUser.homeTimeline({count: this.n_tweets}).each(function(tweet) {
+      var user_data = { 
+        user: {
+          id: tweet.user.attributes.id, 
+          name: tweet.user.attributes.name,
+          username: tweet.user.attributes.screen_name,
+          description: tweet.user.attributes.description,
+          avatar_url: tweet.user.attributes.profile_image_url
+        }, 
+        tweets: [{id: tweet.id, text: tweet.text}] 
+      }
+      that.data.push(user_data);
+      if(that.data.length >= that.n_tweets) {
+        $(that).trigger('dataLoaded');
+        return false;
+      }
+    });
+  }
+
+  this.loadDataUsingPublicAPI = function() {
+    var that = this;
+    var following_url = 'https://api.twitter.com/1/friends/ids.json?callback=?' +
+                    '&screen_name=' + this.username;
+    $.jsonp({
+      url: following_url,
+      success: function(result) {
+        that.following_ids = result.ids;
+        that.loadData();
+      },
+      error: function(xhr) {
+        var rate_limit_url = 'https://api.twitter.com/1/account/rate_limit_status.json?callback=?';
+        $.jsonp({
+          url: rate_limit_url,
+          success: function(result) {
+            if(result.remaining_hits == 0) {
+              $(that).trigger('rateLimitReached');
+            }
+            else {
+              $(that).trigger('loadFollowingError');
+            }
+          },
+          error: function() { $(that).trigger('loadFollowingError'); }
+        })
+      }
+    });
+  }
+
   this.loadData = function() {
     if(this.fetch_attempts >= this.max_fetch_attempts) {
       $(this).trigger('fetchAttemptsLimit'); 
@@ -148,6 +179,23 @@ window.GameEngine = function() {
     else {
       $(this).trigger('dataLoaded');
     }
+  }
+
+  this.getUserData = function(result) {
+    var user_data = { user: {}, tweets: [] }
+    user_data.user = {
+      id: result[0].user.id, 
+      name: result[0].user.name,
+      username: result[0].user.screen_name,
+      description: result[0].user.description,
+      avatar_url: result[0].user.profile_image_url
+    }
+    $.each(result, function(index, tweet) {
+      if(tweet.text[0] != '@') { //Avoid tweets that start with a mention
+        user_data.tweets.push({id: tweet.id, text: tweet.text});
+      }
+    });
+    return user_data;
   }
 
   this.findDataByUser = function(user_id) {
@@ -180,7 +228,7 @@ window.GameEngine = function() {
   this.getRandomUserId = function() {
     var user_id = null;
     do {
-        var n = Math.floor((Math.random()*this.following_ids.length)+1);
+        var n = Math.floor((Math.random()*this.following_ids.length));
         user_id = this.following_ids[n];
         var used = false;
         for (i = 0; i < this.data.length; i++) {
@@ -191,23 +239,6 @@ window.GameEngine = function() {
         }
     } while (used);
     return user_id;
-  }
-
-  this.getUserData = function(result) {
-    var user_data = { user: {}, tweets: [] }
-    user_data.user = {
-      id: result[0].user.id, 
-      name: result[0].user.name,
-      username: result[0].user.screen_name,
-      description: result[0].user.description,
-      avatar_url: result[0].user.profile_image_url
-    }
-    $.each(result, function(index, tweet) {
-      if(tweet.text[0] != '@') { //Avoid tweets that start with a mention
-        user_data.tweets.push({id: tweet.id, text: tweet.text});
-      }
-    });
-    return user_data;
   }
 
 }
