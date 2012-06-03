@@ -177,7 +177,7 @@ window.GameEngine = function() {
     localStorage.setItem(this.username + '_pages', pages + 1);
 
     // Restart if reached end of timeline or pages is too much into the past
-    if(last_in_data_array == last_stored || pages > 2) {
+    if(last_in_data_array == last_stored || pages > 20) {
       localStorage.removeItem(this.username + '_last_tweet_id');
       localStorage.setItem(this.username + '_pages', 0);
     }
