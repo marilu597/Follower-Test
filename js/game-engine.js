@@ -103,14 +103,16 @@ window.GameEngine = function() {
   /*************************************************/
 
   this.loadDataUsingTwitterAnywhere = function() {
-    var n_to_fetch = 200;
+    var n_to_fetch = 30;
+    var options = { count: n_to_fetch }
+    var last_tweet_id = localStorage.getItem(this.username + '_last_tweet_id');
+    if (last_tweet_id) {
+      options.max_id = last_tweet_id;
+    }
     var data_from_tweets = [];
     var that = this;
-    this.twitterCurrentUser.homeTimeline({count: n_to_fetch, exclude_replies: 1})
+    this.twitterCurrentUser.homeTimeline(options)
     .each(function(tweet){
-      if(tweet.text[0] == '@') {
-        return false;
-      }
       var data = { 
         user: {
           id: tweet.user.attributes.id, 
@@ -123,6 +125,14 @@ window.GameEngine = function() {
       }
       data_from_tweets.push(data);
       if(data_from_tweets.length >= n_to_fetch) {
+        // Store last tweet id to use as max_id on next request
+        if(last_tweet_id == tweet.id) {
+          localStorage.removeItem(that.username + '_last_tweet_id');
+        }
+        else {
+          localStorage.setItem(that.username + '_last_tweet_id', tweet.id);
+        }
+        // Choose Random Tweets
         that.chooseRandomFromData(data_from_tweets);
       }
     });
@@ -137,7 +147,7 @@ window.GameEngine = function() {
 
     var n = Math.floor((Math.random()*dataArray.length));
     var data = dataArray[n];
-    if(!this.findDataByUser(data.user.id)) {
+    if(data.tweets[0].text[0] != '@' && !this.findDataByUser(data.user.id)) {
       this.data.push(data);
     }
 
