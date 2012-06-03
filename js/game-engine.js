@@ -103,15 +103,15 @@ window.GameEngine = function() {
   /*************************************************/
 
   this.loadDataUsingTwitterAnywhere = function() {
+    var n_to_fetch = 200;
+    var data_from_tweets = [];
     var that = this;
-    this.twitterCurrentUser.homeTimeline({count: 50}).each(function(tweet) {
-      if(that.data.length >= that.n_tweets) {
-        return null;
+    this.twitterCurrentUser.homeTimeline({count: n_to_fetch, exclude_replies: 1})
+    .each(function(tweet){
+      if(tweet.text[0] == '@') {
+        return false;
       }
-      if(tweet.text[0] == '@' || that.findDataByUser(tweet.user.attributes.id)) {
-        return null;
-      }
-      var user_data = { 
+      var data = { 
         user: {
           id: tweet.user.attributes.id, 
           name: tweet.user.attributes.name,
@@ -121,11 +121,32 @@ window.GameEngine = function() {
         }, 
         tweets: [{id: tweet.id, text: tweet.text}] 
       }
-      that.data.push(user_data);
-      if(that.data.length >= that.n_tweets) {
-        $(that).trigger('dataLoaded');
+      data_from_tweets.push(data);
+      if(data_from_tweets.length >= n_to_fetch) {
+        that.chooseRandomFromData(data_from_tweets);
       }
     });
+  }
+
+  this.chooseRandomFromData = function(dataArray) {
+    if(this.fetch_attempts >= dataArray.length) {
+      $(this).trigger('fetchAttemptsLimit');
+      return 0;
+    }
+    this.fetch_attempts++;
+
+    var n = Math.floor((Math.random()*dataArray.length));
+    var data = dataArray[n];
+    if(!this.findDataByUser(data.user.id)) {
+      this.data.push(data);
+    }
+
+    if(this.data.length >= this.n_tweets) {
+      $(this).trigger('dataLoaded');
+    }
+    else {
+      this.chooseRandomFromData(dataArray);
+    }
   }
 
   this.loadDataUsingPublicAPI = function() {
