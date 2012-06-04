@@ -1,16 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <title>Follower Test - ¿Qué tanto conoces a la gente que sigues en Twitter?</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="FollowerTest is an addictive Twitter game where you match Tweets with their corresponding authors. Are you a good follower? Take the Follower test and find out!">
-  <title>Follower Test - How well do you know the people you follow on Twitter?</title>
+  <meta name="description" content="FollowerTest es un juego adictivo donde tienes que adivinar a quién le pertenece cada Tweet. Eres un buen follower? Toma el test y averígualo!">
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-  <script type="text/javascript" src="js/jquery.jsonp.js"></script>
-  <script type="text/javascript" src="js/bootstrap-dropdown.js"></script>
-  <script type="text/javascript" src="js/bootstrap-collapse.js"></script>
-  <script type="text/javascript" src="js/game-engine.js"></script>
-  <script type="text/javascript" src="js/game-ui.js"></script>
+  <script type="text/javascript" src="js/followertest.js"></script>
   <script src="http://platform.twitter.com/anywhere.js?id=35HvGxgPCLFn4TUbP90A&v=1" type="text/javascript"></script>
   <script type="text/javascript">
     twttr.anywhere(function (T) {
@@ -24,16 +20,14 @@
       });
     });
   </script>
-  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
-  <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css" />
-  <link rel="stylesheet" type="text/css" href="css/game.css" />
+  <link rel="stylesheet" type="text/css" href="css/followertest.css" />
 </head>
 <body>
   <!-- Navbar -->
   <div class="navbar">
     <div class="navbar-inner">
       <div class="container-fluid">
-        <a class="brand" href="/">
+        <a class="brand" href="/es.html">
           Follower Test
         </a>
         <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -44,9 +38,9 @@
         <div class="nav-collapse">
           <ul class="nav pull-right">
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Language <b class="caret"></b></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Idioma <b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="/">English</a></li>
+                <li><a href="/index.html">English</a></li>
                 <li><a href="/es.html">Español</a></li>
               </ul>
             </li>
@@ -61,23 +55,23 @@
   <div id="index" class="container-fluid">
     <div class="row-fluid">
       <div class="well span12">
-        <h1>How well do you know the people you follow?</h1>
+        <h1>¿Qué tanto conoces a la gente que sigues?</h1>
         <form accept-charset="UTF-8">
-          <button type="submit" class="btn btn-primary">Go</button>
+          <button type="submit" class="btn btn-primary">Empezar</button>
         </form>
-        <div class="loading">Loading...</div>
+        <div class="loading">Cargando...</div>
         <div class="error">
-          <p>There was an error loading tweets.<br>Please make sure the username is correct or try again later.</p>
-          <p>If you have a protected account, you must login in order to play.</p>
+          <p>Hubo un error cargando los tweets.<br>Por favor asegúrate que el nombre de usuario esté bien y vuelve a intentarlo.</p>
+          <p>Si tu cuenta está protediga, debes iniciar sesión para poder jugar.</p>
           <p><span class="loginbtn"></span></p>
         </div>
         <div class="rateLimit">
-          <p>You have reached the <a href="https://dev.twitter.com/docs/rate-limiting">Twitter Rate Limit</a>.</p>
+          <p>Has llegado al <a href="https://dev.twitter.com/docs/rate-limiting">Límite Impuesto por Twitter</a>.</p>
           <p><span class="loginbtn"></span></p>
         </div>
         <div class="instructions">
           <i class="icon-arrow-down"></i>
-          Click on each Tweet to select its author
+          Haz clic en cada Tweet para seleccionar su autor
           <i class="icon-arrow-down"></i>
         </div>
         <div class="tweets">
@@ -98,16 +92,15 @@
         </div>
         <!-- End Google Adsense -->
         <div class="grade">
-          <button class="btn disabled">Grade my Answers</button>
+          <button class="btn disabled">Calificar mis Respuestas</button>
         </div>
         <div class="result">
           <p>
-            You guessed <span class="correct"></span> out of 
-            <span class="total"></span>!
+            ¡Acertaste <span class="correct"></span> de <span class="total"></span>!
           </p>
           <p class="share">
             <a data-url="https://twitter.com/intent/tweet?related=trisfera&text="
-             class="btn">Share your result</a>
+             class="btn">Comparte tu resultado</a>
           </p>
         </div>
       </div>
@@ -130,24 +123,24 @@
         )
         $('form').append(
           '<div>' +
-            '<button id="signout" type="btn">Sign Out</button>' +
+            '<button id="signout" type="btn">Cerrar Sesión</button>' +
           '</div>'
         );
         $("#signout").bind('click', function (evt) {
           evt.preventDefault();
           twttr.anywhere.signOut();
         });
-        $('.rateLimit p:first').append('<br>In order to continue playing, you must login with another Twitter account or wait until your rate is reset.');
+        $('.rateLimit p:first').append('<br>Para poder seguir jugando, debes iniciar sesión con otra cuenta de Twitter o esperar a que el límite expire.');
       }
       else {
         window.twitterCurrentUser = null;
         $('form').prepend(
           '<label for="screen_name">@</label>' +
           '<input id="screen_name" name="screen_name"' +
-            'placeholder="Enter your username" size="30" type="text"' +
+            'placeholder="Ingresa tu nombre de usuario" size="30" type="text"' +
             'required="required">'
         )
-        $('.rateLimit p:first').append('<br>In order to continue playing, you must login with your Twitter account.');
+        $('.rateLimit p:first').append('<br>Para poder seguir jugando, debes iniciar sesión con tu cuenta de Twitter.');
         $('.loginbtn').each(function(i, btn) {
           T(btn).connectButton();
         });
@@ -178,7 +171,7 @@
           </script>
         </div>
         <!-- End Google Adsense 2 -->
-        <div class="instructions">Who wrote this?</div>
+        <div class="instructions">¿Quién escribió esto?</div>
         <div class="authors">
         </div>
       </div>
@@ -190,7 +183,7 @@
   <div id="footer">
     <p>
       <a href="http://twitter.com/trisfera", target="_blank">
-        Developed by <span class="username">@Trisfera</span>
+        Desarrollado por <span class="username">@Trisfera</span>
       </a>
     </p>
   </div>
@@ -200,8 +193,8 @@
   <script type="text/javascript">
     window.location.hash = '';
     I18n = {
-      correct_answer: 'Correct answer',
-      share_result: 'I just scored {correct} out of {total} in the #followerTest! Are you a good follower? Take the test and find out http://followertest.com'
+      correct_answer: 'Respuesta correcta',
+      share_result: 'Acabo de obtener {correct} respuestas correctas en el #followerTest! Eres un buen follower? Toma el test y compruébalo http://followertest.com/es.html'
     }
     $('#index form').submit(function(evt){
       evt.preventDefault();
