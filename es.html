@@ -6,7 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="FollowerTest es un juego adictivo donde tienes que adivinar a quién le pertenece cada Tweet. Eres un buen follower? Toma el test y averígualo!">
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-  <script type="text/javascript" src="js/followertest.js"></script>
+  <script type="text/javascript" src="js/jquery.jsonp.js"></script>
+  <script type="text/javascript" src="js/bootstrap-dropdown.js"></script>
+  <script type="text/javascript" src="js/bootstrap-collapse.js"></script>
+  <script type="text/javascript" src="js/game-engine.js"></script>
+  <script type="text/javascript" src="js/game-ui.js"></script>
   <script src="http://platform.twitter.com/anywhere.js?id=35HvGxgPCLFn4TUbP90A&v=1" type="text/javascript"></script>
   <script type="text/javascript">
     twttr.anywhere(function (T) {
@@ -20,7 +24,9 @@
       });
     });
   </script>
-  <link rel="stylesheet" type="text/css" href="css/followertest.css" />
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css" />
+  <link rel="stylesheet" type="text/css" href="css/game.css" />
 </head>
 <body>
   <!-- Navbar -->
@@ -40,7 +46,7 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Idioma <b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="/index.html">English</a></li>
+                <li><a href="/">English</a></li>
                 <li><a href="/es.html">Español</a></li>
               </ul>
             </li>
@@ -56,13 +62,14 @@
     <div class="row-fluid">
       <div class="well span12">
         <h1>¿Qué tanto conoces a la gente que sigues?</h1>
-        <form accept-charset="UTF-8">
+        <form accept-charset="UTF-8" action="" method="get">
+          <input type="hidden" name="n_tweets" id="n_tweets" value="5">
           <button type="submit" class="btn btn-primary">Empezar</button>
         </form>
         <div class="loading">Cargando...</div>
         <div class="error">
           <p>Hubo un error cargando los tweets.<br>Por favor asegúrate que el nombre de usuario esté bien y vuelve a intentarlo.</p>
-          <p>Si tu cuenta está protediga, debes iniciar sesión para poder jugar.</p>
+          <p>Si tu cuenta está protegida, debes iniciar sesión para poder jugar.</p>
           <p><span class="loginbtn"></span></p>
         </div>
         <div class="rateLimit">
@@ -108,49 +115,6 @@
   </div>
   <!-- End Index -->
 
-  <!-- Check if user connected Twitter -->
-  <script type="text/javascript">
-    twttr.anywhere(function (T) {
-      if (T.isConnected()) {
-        window.twitterCurrentUser = T.currentUser;
-        $('form').prepend(
-          '<input type="hidden" id="loggedOnTwitter"' + 
-           'name="loggedOnTwitter" value="true">' +
-          '<label for="screen_name">@</label>' +
-          '<input id="screen_name" name="screen_name" ' +
-            'value="' + T.currentUser.data('screen_name') + '" ' + 
-            'size="30" type="text" disabled="disabled">'
-        )
-        $('form').append(
-          '<div>' +
-            '<button id="signout" type="btn">Cerrar Sesión</button>' +
-          '</div>'
-        );
-        $("#signout").bind('click', function (evt) {
-          evt.preventDefault();
-          twttr.anywhere.signOut();
-        });
-        $('.rateLimit p:first').append('<br>Para poder seguir jugando, debes iniciar sesión con otra cuenta de Twitter o esperar a que el límite expire.');
-      }
-      else {
-        window.twitterCurrentUser = null;
-        $('form').prepend(
-          '<label for="screen_name">@</label>' +
-          '<input id="screen_name" name="screen_name"' +
-            'placeholder="Ingresa tu nombre de usuario" size="30" type="text"' +
-            'required="required">'
-        )
-        $('.rateLimit p:first').append('<br>Para poder seguir jugando, debes iniciar sesión con tu cuenta de Twitter.');
-        $('.loginbtn').each(function(i, btn) {
-          T(btn).connectButton();
-        });
-      }
-      $('.loading').hide();
-      $('form button').show();
-    });
-  </script>
-  <!-- End Check if user connected Twitter -->
-
   <!-- Choose Author -->
   <div id="chooseAuthor" class="container-fluid">
     <div class="row-fluid">
@@ -189,26 +153,93 @@
   </div>
   <!-- End Footer -->
 
-  <!-- Start App -->
+  <!-- Function for getting url params -->
   <script type="text/javascript">
-    window.location.hash = '';
-    I18n = {
-      correct_answer: 'Respuesta correcta',
-      share_result: 'Acabo de obtener {correct} respuestas correctas en el #followerTest! Eres un buen follower? Toma el test y compruébalo http://followertest.com/es.html'
+    function getQueryParams(qs) {
+        qs = qs.split("+").join(" ");
+
+        var params = {}, tokens,
+            re = /[?&]?([^=]+)=([^&]*)/g;
+
+        while (tokens = re.exec(qs)) {
+            params[decodeURIComponent(tokens[1])]
+                = decodeURIComponent(tokens[2]);
+        }
+
+        return params;
     }
-    $('#index form').submit(function(evt){
-      evt.preventDefault();
-      // Delete last game 
-      if(typeof gameUI !== "undefined") {
-        gameUI.unbindAll();
-        delete(gameUI);
+  </script>
+  <!-- End unction for getting url params -->
+
+  <!-- Check if user connected Twitter and Start App -->
+  <script type="text/javascript">
+    var query = getQueryParams(document.location.search);
+    var username = query.screen_name;
+    if(username) { username = username.replace('@', ''); }
+    var n_tweets = parseInt(query.n_tweets);
+    var twitterCurrentUser = null;
+
+    twttr.anywhere(function (T) {
+      if (T.isConnected()) {
+        twitterCurrentUser = T.currentUser;
+        username = T.currentUser.data('screen_name');
+        $('form').prepend(
+          '<input type="hidden" id="loggedOnTwitter"' + 
+           'name="loggedOnTwitter" value="true">' +
+          '<label for="screen_name">@</label>' +
+          '<input id="screen_name" name="screen_name" ' +
+            'value="' + username + '" ' + 
+            'size="30" type="text" disabled="disabled">'
+        )
+        $('form').append(
+          '<div>' +
+            '<button id="signout" type="btn">Cerrar Sesión</button>' +
+          '</div>'
+        );
+        $("#signout").bind('click', function (evt) {
+          evt.preventDefault();
+          twttr.anywhere.signOut();
+        });
+        $('.rateLimit p:first').append('<br>Para poder seguir jugando, debes iniciar sesión con otra cuenta de Twitter o esperar a que el límite expire.');
       }
-      // Start new
-      window.location.hash = '';
-      gameUI = new GameUI(window.twitterCurrentUser);
-      gameUI.start();
+      else {
+        $('form').prepend(
+          '<label for="screen_name">@</label>' +
+          '<input id="screen_name" name="screen_name"' +
+            'placeholder="Ingresa tu nombre de usuario" size="30" type="text"' +
+            'required="required">'
+        )
+        $('.rateLimit p:first').append('<br>Para poder seguir jugando, debes iniciar sesión con tu cuenta de Twitter.');
+        $('.loginbtn').each(function(i, btn) {
+          T(btn).connectButton();
+        });
+      }
+      $('.loading').hide();
+      $('form button').show();
+
+      // Start App
+      if(username && n_tweets) {
+        window.location.hash = '';
+        window.I18n = {
+          correct_answer: 'Respuesta correcta',
+          share_result: 'Acabo de obtener {correct} de {total} en el #followerTest! Eres un buen follower? Toma el test y compruébalo http://followertest.com/es.html'
+        }
+        $('#screen_name').val(username);
+        $('#n_tweets').val(n_tweets);
+        // Delete last game 
+        if(typeof gameUI !== "undefined") {
+          gameUI.unbindAll();
+          delete(gameUI);
+        }
+        // Start new
+        window.location.hash = '';
+        gameUI = new GameUI();
+        gameUI.start(username, twitterCurrentUser, n_tweets);
+      }
+      $('form').attr('action', document.URL.replace('#', ''))
     });
   </script>
+  <!-- End Check if user connected Twitter and Start App -->
 
   <!-- Google Analytics -->
   <script type="text/javascript">
@@ -223,9 +254,5 @@
     })();
   </script>
   <!--End Google Analytics -->
-
-  <!-- Tweet Button Code -->
-  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-  <!-- End Tweet Button Code -->
 </body>
 </html>
