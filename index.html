@@ -62,7 +62,8 @@
     <div class="row-fluid">
       <div class="well span12">
         <h1>How well do you know the people you follow?</h1>
-        <form accept-charset="UTF-8">
+        <form accept-charset="UTF-8" action="" method="get">
+          <input type="hidden" name="n_tweets" id="n_tweets" value="5">
           <button type="submit" class="btn btn-primary">Go</button>
         </form>
         <div class="loading">Loading...</div>
@@ -115,49 +116,6 @@
   </div>
   <!-- End Index -->
 
-  <!-- Check if user connected Twitter -->
-  <script type="text/javascript">
-    twttr.anywhere(function (T) {
-      if (T.isConnected()) {
-        window.twitterCurrentUser = T.currentUser;
-        $('form').prepend(
-          '<input type="hidden" id="loggedOnTwitter"' + 
-           'name="loggedOnTwitter" value="true">' +
-          '<label for="screen_name">@</label>' +
-          '<input id="screen_name" name="screen_name" ' +
-            'value="' + T.currentUser.data('screen_name') + '" ' + 
-            'size="30" type="text" disabled="disabled">'
-        )
-        $('form').append(
-          '<div>' +
-            '<button id="signout" type="btn">Sign Out</button>' +
-          '</div>'
-        );
-        $("#signout").bind('click', function (evt) {
-          evt.preventDefault();
-          twttr.anywhere.signOut();
-        });
-        $('.rateLimit p:first').append('<br>In order to continue playing, you must login with another Twitter account or wait until your rate is reset.');
-      }
-      else {
-        window.twitterCurrentUser = null;
-        $('form').prepend(
-          '<label for="screen_name">@</label>' +
-          '<input id="screen_name" name="screen_name"' +
-            'placeholder="Enter your username" size="30" type="text"' +
-            'required="required">'
-        )
-        $('.rateLimit p:first').append('<br>In order to continue playing, you must login with your Twitter account.');
-        $('.loginbtn').each(function(i, btn) {
-          T(btn).connectButton();
-        });
-      }
-      $('.loading').hide();
-      $('form button').show();
-    });
-  </script>
-  <!-- End Check if user connected Twitter -->
-
   <!-- Choose Author -->
   <div id="chooseAuthor" class="container-fluid">
     <div class="row-fluid">
@@ -196,26 +154,93 @@
   </div>
   <!-- End Footer -->
 
-  <!-- Start App -->
+  <!-- Function for getting url params -->
   <script type="text/javascript">
-    window.location.hash = '';
-    I18n = {
-      correct_answer: 'Correct answer',
-      share_result: 'I just scored {correct} out of {total} in the #followerTest! Are you a good follower? Take the test and find out http://followertest.com'
+    function getQueryParams(qs) {
+        qs = qs.split("+").join(" ");
+
+        var params = {}, tokens,
+            re = /[?&]?([^=]+)=([^&]*)/g;
+
+        while (tokens = re.exec(qs)) {
+            params[decodeURIComponent(tokens[1])]
+                = decodeURIComponent(tokens[2]);
+        }
+
+        return params;
     }
-    $('#index form').submit(function(evt){
-      evt.preventDefault();
-      // Delete last game 
-      if(typeof gameUI !== "undefined") {
-        gameUI.unbindAll();
-        delete(gameUI);
+  </script>
+  <!-- End unction for getting url params -->
+
+  <!-- Check if user connected Twitter and Start App -->
+  <script type="text/javascript">
+    var query = getQueryParams(document.location.search);
+    var username = query.screen_name;
+    if(username) { username = username.replace('@', ''); }
+    var n_tweets = parseInt(query.n_tweets);
+    var twitterCurrentUser = null;
+
+    twttr.anywhere(function (T) {
+      if (T.isConnected()) {
+        twitterCurrentUser = T.currentUser;
+        username = T.currentUser.data('screen_name');
+        $('form').prepend(
+          '<input type="hidden" id="loggedOnTwitter"' + 
+           'name="loggedOnTwitter" value="true">' +
+          '<label for="screen_name">@</label>' +
+          '<input id="screen_name" name="screen_name" ' +
+            'value="' + username + '" ' + 
+            'size="30" type="text" disabled="disabled">'
+        )
+        $('form').append(
+          '<div>' +
+            '<button id="signout" type="btn">Sign Out</button>' +
+          '</div>'
+        );
+        $("#signout").bind('click', function (evt) {
+          evt.preventDefault();
+          twttr.anywhere.signOut();
+        });
+        $('.rateLimit p:first').append('<br>In order to continue playing, you must login with another Twitter account or wait until your rate is reset.');
       }
-      // Start new
-      window.location.hash = '';
-      gameUI = new GameUI(window.twitterCurrentUser);
-      gameUI.start();
+      else {
+        $('form').prepend(
+          '<label for="screen_name">@</label>' +
+          '<input id="screen_name" name="screen_name"' +
+            'placeholder="Enter your username" size="30" type="text"' +
+            'required="required">'
+        )
+        $('.rateLimit p:first').append('<br>In order to continue playing, you must login with your Twitter account.');
+        $('.loginbtn').each(function(i, btn) {
+          T(btn).connectButton();
+        });
+      }
+      $('.loading').hide();
+      $('form button').show();
+
+      // Start App
+      if(username && n_tweets) {
+        window.location.hash = '';
+        window.I18n = {
+          correct_answer: 'Correct answer',
+          share_result: 'I just scored {correct} out of {total} in the #followerTest! Are you a good follower? Take the test and find out http://followertest.com'
+        }
+        $('#screen_name').val(username);
+        $('#n_tweets').val(n_tweets);
+        // Delete last game 
+        if(typeof gameUI !== "undefined") {
+          gameUI.unbindAll();
+          delete(gameUI);
+        }
+        // Start new
+        window.location.hash = '';
+        gameUI = new GameUI();
+        gameUI.start(username, twitterCurrentUser, n_tweets);
+      }
+      $('form').attr('action', document.URL.replace('#', ''))
     });
   </script>
+  <!-- End Check if user connected Twitter and Start App -->
 
   <!-- Google Analytics -->
   <script type="text/javascript">
@@ -230,9 +255,5 @@
     })();
   </script>
   <!--End Google Analytics -->
-
-  <!-- Tweet Button Code -->
-  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-  <!-- End Tweet Button Code -->
 </body>
 </html>

@@ -1,6 +1,6 @@
-window.GameEngine = function() {
+window.GameEngine = function(n_tweets) {
 	this.username = '';            // Twitter username for current player
-	this.n_tweets = 7;             // Number of tweets to show
+  this.n_tweets;                 // Number of tweets to show
   this.fetch_attempts = 0;       // Counter to avoid infinite loops
   this.max_fetch_attempts = 15;  // Max number of attempts before quitting
   this.following_ids = [];       // List of user ids the current player follows on Twitter
@@ -18,9 +18,10 @@ window.GameEngine = function() {
   * - 'fetchAttemptsLimit' when max number of fetch attempts reached
   * - 'dataLoaded' on success
   */ 
-  this.start = function(username, twitterCurrentUser) {
+  this.start = function(username, twitterCurrentUser, n_tweets) {
     this.username = username;
     this.twitterCurrentUser = twitterCurrentUser;
+    this.n_tweets = n_tweets;
     if (twitterCurrentUser) {
       this.loadDataUsingTwitterAnywhere();
     }

@@ -9,11 +9,17 @@ Array.prototype.shuffle = function() {
   }
 }
 
-window.GameUI = function(twitterCurrentUser) {
+window.GameUI = function() {
   this.gameEngine;
+  this.username;
+  this.twitterCurrentUser;
+  this.n_tweets;
 
-  this.start = function() {
+  this.start = function(username, twitterCurrentUser, n_tweets) {
     this.gameEngine = new GameEngine(this);
+    this.username = username;
+    this.twitterCurrentUser = twitterCurrentUser;
+    this.n_tweets = n_tweets;
 
     // Bind to hashchange
     $(window).on('hashchange', {gameUI: this}, this.route);
@@ -45,8 +51,7 @@ window.GameUI = function(twitterCurrentUser) {
     $('#index .result').hide();
     this.showMessage('loading');
 
-    var username = $('#screen_name').val().replace('@', '');
-    this.gameEngine.start(username, twitterCurrentUser);
+    this.gameEngine.start(username, twitterCurrentUser, n_tweets);
   }
 
   this.route = function(evt) {
