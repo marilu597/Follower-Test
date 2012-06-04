@@ -62,8 +62,8 @@
     <div class="row-fluid">
       <div class="well span12">
         <h1>How well do you know the people you follow?</h1>
-        <form accept-charset="UTF-8" action="" method="get">
-          <input type="hidden" name="n_tweets" id="n_tweets" value="5">
+        <form accept-charset="UTF-8" action="" method="get" id="startGame">
+          <input type="hidden" name="n_tweets" id="n_tweets" value="3">
           <button type="submit" class="btn btn-primary">Go</button>
         </form>
         <div class="loading">Loading...</div>
@@ -106,6 +106,13 @@
             You guessed <span class="correct"></span> out of 
             <span class="total"></span>!
           </p>
+          <div class="someCorrect">
+            <button class="btn btn-primary" id="tryAgain">Try Again</button>
+          </div>
+          <div class="allCorrect">
+            <p>How about making it a little bit harder?</p>
+            <button class="btn btn-primary" id="nextLevel">Play next level</button> 
+          </div>
           <p class="share">
             <a data-url="https://twitter.com/intent/tweet?related=trisfera&text="
              class="btn">Share your result</a>
@@ -237,7 +244,15 @@
         gameUI = new GameUI();
         gameUI.start(username, twitterCurrentUser, n_tweets);
       }
-      $('form').attr('action', document.URL.replace('#', ''))
+      $('form').attr('action', document.URL.replace('#', ''));
+      if(!n_tweets) { n_tweets = 5 }
+      $('#nextLevel').on('click', function() {
+        $('#n_tweets').val(n_tweets * 2);
+        $('#startGame').submit();
+      });
+      $('#tryAgain').on('click', function() {
+        $('#startGame').submit();
+      });
     });
   </script>
   <!-- End Check if user connected Twitter and Start App -->

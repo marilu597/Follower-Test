@@ -225,6 +225,14 @@ window.GameUI = function() {
     web_intent = $('#index .result .share a');
     web_intent.attr('href', web_intent.attr('data-url') + 
       encodeURIComponent(share_result));
+    if(correct == total) {
+      $('#index .result .allCorrect').show();
+      $('#index .someCorrect').hide();
+    }
+    else {
+      $('#index .result .allCorrect').hide();
+      $('#index .someCorrect').show();
+    }
     $('#index .result').show();
   }
 

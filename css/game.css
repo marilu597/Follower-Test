@@ -138,6 +138,14 @@ form .btn {
 .result p:first-child{
   font-size: 1.3em;
 }
+.result .allCorrect, .result .someCorrect {
+  display: none;
+  margin: 1em 0;
+}
+.result .allCorrect button, .result .someCorrect button {
+  margin-top: 0.5em;
+  margin-bottom: 0.2em;
+}
 .result .share {
   margin-top: 1em;
 }
