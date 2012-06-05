@@ -153,12 +153,12 @@ window.GameEngine = function(n_tweets) {
     if(dataArray.length < this.n_tweets) {
       $(this).trigger('fetchAttemptsLimit');
     }
-
+    var that = this;
     $.each(dataArray, function(i, data) {
-      if(data.tweets[0].text[0] != '@' && !this.findDataByUser(data.user.id)) {
-        this.data.push(data);
+      if(data.tweets[0].text[0] != '@' && !that.findDataByUser(data.user.id)) {
+        that.data.push(data);
       }
-      if(this.data.length >= this.n_tweets) {
+      if(that.data.length >= that.n_tweets) {
         return false;
       }
     });
