@@ -63,7 +63,6 @@
       <div class="well span12">
         <h1>¿Qué tanto conoces a la gente que sigues?</h1>
         <form accept-charset="UTF-8" action="" method="get" id="startGame">
-          <input type="hidden" name="n_tweets" id="n_tweets" value="3">
           <button type="submit" class="btn btn-primary">Empezar</button>
         </form>
         <div class="loading">Cargando...</div>
@@ -183,7 +182,6 @@
     var query = getQueryParams(document.location.search);
     var username = query.screen_name;
     if(username) { username = username.replace('@', ''); }
-    var n_tweets = parseInt(query.n_tweets);
     var twitterCurrentUser = null;
 
     twttr.anywhere(function (T) {
@@ -225,14 +223,13 @@
       $('form button').show();
 
       // Start App
-      if(username && n_tweets) {
+      if(username) {
         window.location.hash = '';
         window.I18n = {
           correct_answer: 'Respuesta correcta',
           share_result: 'Acabo de obtener {correct} de {total} en el #followerTest! Eres un buen follower? Toma el test y compruébalo http://followertest.com/es.html'
         }
         $('#screen_name').val(username);
-        $('#n_tweets').val(n_tweets);
         // Delete last game 
         if(typeof gameUI !== "undefined") {
           gameUI.unbindAll();
@@ -241,16 +238,10 @@
         // Start new
         window.location.hash = '';
         gameUI = new GameUI();
-        gameUI.start(username, twitterCurrentUser, n_tweets);
+        gameUI.start(username, twitterCurrentUser);
       }
       $('form').attr('action', document.URL.replace('#', ''));
-      if(!n_tweets) { n_tweets = 5 }
-      $('#nextLevel').on('click', function() {
-        var new_n_tweets = Math.ceil(n_tweets * 1.5);
-        $('#n_tweets').val(new_n_tweets);
-        $('#startGame').submit();
-      });
-      $('#tryAgain').on('click', function() {
+      $('#nextLevel, #tryAgain').on('click', function() {
         $('#startGame').submit();
       });
     });

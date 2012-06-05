@@ -1,4 +1,4 @@
-window.GameEngine = function(n_tweets) {
+window.GameEngine = function() {
 	this.username = '';            // Twitter username for current player
   this.n_tweets;                 // Number of tweets to show
   this.fetch_attempts = 0;       // Counter to avoid infinite loops
@@ -21,7 +21,10 @@ window.GameEngine = function(n_tweets) {
   this.start = function(username, twitterCurrentUser, n_tweets) {
     this.username = username;
     this.twitterCurrentUser = twitterCurrentUser;
-    this.n_tweets = n_tweets;
+    this.n_tweets = window.localStorage.getItem(this.username + '_n_tweets');
+    if(!this.n_tweets) {
+      this.n_tweets = 3;
+    }
     this.max_fetch_attempts = n_tweets * 5;
     if (twitterCurrentUser) {
       this.loadDataUsingTwitterAnywhere();
@@ -97,6 +100,11 @@ window.GameEngine = function(n_tweets) {
           correct_user: data.user});
       }
     });
+    if(correct_ans == this.n_tweets) {
+      // Next Level
+      window.localStorage.setItem(this.username + '_n_tweets', 
+        Math.ceil(this.n_tweets * 1.5));
+    }
     return correct_ans;
   }
 
@@ -119,8 +127,8 @@ window.GameEngine = function(n_tweets) {
     this.twitterCurrentUser.homeTimeline(options)
     .each(function(tweet){
 
-      // Sometimes each() will end before adding all items to data_from_tweets
-      // I couldn't find any reliable way to check if each has finished,
+      // Sometimes each() will end before adding all items to data_from_tweets.
+      // I couldn't find any reliable way to check if each had finished,
       // so I'm adding a timeout function
       if(typeof that.timeOutId == "number") {  
         window.clearTimeout(that.timeOutId);  
@@ -151,6 +159,7 @@ window.GameEngine = function(n_tweets) {
 
   this.chooseRandomFromData = function(dataArray) {
     if(dataArray.length < this.n_tweets) {
+      this.resetLocalStorage();
       $(this).trigger('fetchAttemptsLimit');
     }
     var that = this;
@@ -168,6 +177,7 @@ window.GameEngine = function(n_tweets) {
       $(this).trigger('dataLoaded');
     }
     else {
+      this.resetLocalStorage();
       $(this).trigger('fetchAttemptsLimit');
     }
   }
@@ -183,9 +193,13 @@ window.GameEngine = function(n_tweets) {
 
     // Restart if reached end of timeline or pages is too much into the past
     if(last_in_data_array == last_stored || pages > 20) {
-      localStorage.removeItem(this.username + '_last_tweet_id');
-      localStorage.setItem(this.username + '_pages', 0);
+      this.resetLocalStorage();
     }
+  }
+
+  this.resetLocalStorage = function() {
+    localStorage.removeItem(this.username + '_last_tweet_id');
+      localStorage.setItem(this.username + '_pages', 0);
   }
 
   this.loadDataUsingPublicAPI = function() {

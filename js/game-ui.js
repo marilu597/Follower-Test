@@ -13,13 +13,11 @@ window.GameUI = function() {
   this.gameEngine;
   this.username;
   this.twitterCurrentUser;
-  this.n_tweets;
 
-  this.start = function(username, twitterCurrentUser, n_tweets) {
+  this.start = function(username, twitterCurrentUser) {
     this.gameEngine = new GameEngine(this);
     this.username = username;
     this.twitterCurrentUser = twitterCurrentUser;
-    this.n_tweets = n_tweets;
 
     // Bind to hashchange
     $(window).on('hashchange', {gameUI: this}, this.route);
@@ -51,7 +49,7 @@ window.GameUI = function() {
     $('#index .result').hide();
     this.showMessage('loading');
 
-    this.gameEngine.start(username, twitterCurrentUser, n_tweets);
+    this.gameEngine.start(username, twitterCurrentUser);
   }
 
   this.route = function(evt) {
