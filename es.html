@@ -246,8 +246,8 @@
       $('form').attr('action', document.URL.replace('#', ''));
       if(!n_tweets) { n_tweets = 5 }
       $('#nextLevel').on('click', function() {
-        console.log('nextLevel');
-        $('#n_tweets').val(n_tweets * 2);
+        var new_n_tweets = Math.ceil(n_tweets * 1.5);
+        $('#n_tweets').val(new_n_tweets);
         $('#startGame').submit();
       });
       $('#tryAgain').on('click', function() {
