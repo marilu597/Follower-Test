@@ -18,14 +18,14 @@ window.GameEngine = function() {
   * - 'fetchAttemptsLimit' when max number of fetch attempts reached
   * - 'dataLoaded' on success
   */ 
-  this.start = function(username, twitterCurrentUser, n_tweets) {
+  this.start = function(username, twitterCurrentUser) {
     this.username = username;
     this.twitterCurrentUser = twitterCurrentUser;
-    this.n_tweets = window.localStorage.getItem(this.username + '_n_tweets');
+    this.n_tweets = parseInt(window.localStorage.getItem(this.username + '_n_tweets'));
     if(!this.n_tweets) {
       this.n_tweets = 3;
     }
-    this.max_fetch_attempts = n_tweets * 5;
+    this.max_fetch_attempts = this.n_tweets * 5;
     if (twitterCurrentUser) {
       this.loadDataUsingTwitterAnywhere();
     }
