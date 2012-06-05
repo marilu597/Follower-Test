@@ -120,12 +120,13 @@ window.GameEngine = function() {
     }
     var data_from_tweets = [];
     var options = { count: n_to_fetch }
-    var last_tweet_id = localStorage.getItem(this.username + '_last_tweet_id');
+    var last_tweet_id = parseInt(localStorage.getItem(this.username + '_last_tweet_id'));
     if (last_tweet_id) {
       options.max_id = last_tweet_id;
+      this.timeOutId = window.setTimeout(this.chooseRandomFromData.bind(this), 
+          1000, data_from_tweets);
     }
-    this.twitterCurrentUser.homeTimeline(options)
-    .each(function(tweet){
+    this.twitterCurrentUser.homeTimeline(options).each(function(tweet){
 
       // Sometimes each() will end before adding all items to data_from_tweets.
       // I couldn't find any reliable way to check if each had finished,
@@ -158,9 +159,11 @@ window.GameEngine = function() {
   }
 
   this.chooseRandomFromData = function(dataArray) {
-    if(dataArray.length < this.n_tweets) {
+    this.fetch_attempts++;
+    if(this.fetch_attempts > 5) {
       this.resetLocalStorage();
       $(this).trigger('fetchAttemptsLimit');
+      return;
     }
     var that = this;
     $.each(dataArray, function(i, data) {
@@ -177,12 +180,16 @@ window.GameEngine = function() {
       $(this).trigger('dataLoaded');
     }
     else {
-      this.resetLocalStorage();
-      $(this).trigger('fetchAttemptsLimit');
+      this.updateLocalStorage(dataArray);
+      this.loadDataUsingTwitterAnywhere();
     }
   }
 
   this.updateLocalStorage = function(dataArray) {
+    if(dataArray.length <= 0) {
+      this.resetLocalStorage();
+      return;
+    }
     // Store last tweet id to use as max_id on next request
     var last_in_data_array = dataArray[dataArray.length - 1].tweets[0].id;
     var last_stored = localStorage.getItem(this.username + '_last_tweet_id');
