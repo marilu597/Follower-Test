@@ -150,25 +150,25 @@ window.GameEngine = function(n_tweets) {
   }
 
   this.chooseRandomFromData = function(dataArray) {
-    if(this.fetch_attempts >= dataArray.length) {
-      this.updateLocalStorage(dataArray);
+    if(dataArray.length < this.n_tweets) {
       $(this).trigger('fetchAttemptsLimit');
-      return 0;
     }
-    this.fetch_attempts++;
 
-    var n = Math.floor((Math.random()*dataArray.length));
-    var data = dataArray[n];
-    if(data.tweets[0].text[0] != '@' && !this.findDataByUser(data.user.id)) {
-      this.data.push(data);
-    }
+    $.each(dataArray, function(i, data) {
+      if(data.tweets[0].text[0] != '@' && !this.findDataByUser(data.user.id)) {
+        this.data.push(data);
+      }
+      if(this.data.length >= this.n_tweets) {
+        return false;
+      }
+    });
 
     if(this.data.length >= this.n_tweets) {
       this.updateLocalStorage(dataArray);
       $(this).trigger('dataLoaded');
     }
     else {
-      this.chooseRandomFromData(dataArray);
+      $(this).trigger('fetchAttemptsLimit');
     }
   }
 
