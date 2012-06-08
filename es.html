@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Follower Test - How well do you know the people you follow on Twitter?</title>
+  <title>Follower Test - ¿Qué tanto conoces a la gente que sigues en Twitter?</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="FollowerTest is an addictive Twitter game where you match Tweets with their corresponding authors. Are you a good follower? Take the test and find out!">
+  <meta name="description" content="FollowerTest es un juego adictivo donde tienes que adivinar a quién le pertenece cada Tweet. Eres un buen follower? Toma el test y averígualo!">
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
   <script src="http://platform.twitter.com/anywhere.js?id=35HvGxgPCLFn4TUbP90A&v=1" type="text/javascript"></script>
   <script type="text/javascript" src="js/jquery.jsonp.js"></script>
@@ -32,7 +32,7 @@
         <div class="nav-collapse">
           <ul class="nav pull-right">
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Language <b class="caret"></b></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Idioma <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="/en.html">English</a></li>
                 <li><a href="/es.html">Español</a></li>
@@ -49,26 +49,26 @@
   <div id="index" class="container-fluid">
     <div class="row-fluid">
       <div class="well span12">
-        <h1>How well do you know the people you follow?</h1>
+        <h1>¿Qué tanto conoces a la gente que sigues?</h1>
         <form accept-charset="UTF-8" action="" method="get" id="startGame">
           <label for="screen_name">@</label>
-          <input id="screen_name" name="screen_name" placeholder="Enter your username" 
+          <input id="screen_name" name="screen_name" placeholder="Ingresa tu nombre de usuario" 
             size="30" type="text">
-          <button type="submit" class="btn btn-primary">Go</button>
+          <button type="submit" class="btn btn-primary">Empezar</button>
         </form>
-        <div class="loading">Loading...</div>
+        <div class="loading">Cargando...</div>
         <div class="error">
-          <p>There was an error loading tweets.<br>Please make sure the username is correct or try again later.</p>
-          <p>If you have a protected account, you must login in order to play.</p>
+          <p>Hubo un error cargando los tweets.<br>Por favor asegúrate que el nombre de usuario esté bien y vuelve a intentarlo.</p>
+          <p>Si tu cuenta está protegida, debes iniciar sesión para poder jugar.</p>
           <p><span class="loginbtn"></span></p>
         </div>
         <div class="rateLimit">
-          <p>You have reached the <a href="https://dev.twitter.com/docs/rate-limiting">Twitter Rate Limit</a>.<br>In order to continue playing, you must login with your Twitter account or wait until your rate is reset.</p>
+          <p>Has llegado al <a href="https://dev.twitter.com/docs/rate-limiting">Límite Impuesto por Twitter</a>.<br>Para poder seguir jugando, debes iniciar sesión con otra cuenta o esperar a que el límite de Twitter expire.</p>
           <p><span class="loginbtn"></span></p>
         </div>
         <div class="instructions">
           <i class="icon-arrow-down"></i>
-          Click on each Tweet to select its author
+          Haz clic en cada Tweet para seleccionar su autor
           <i class="icon-arrow-down"></i>
         </div>
         <div class="tweets">
@@ -89,23 +89,22 @@
         </div>
         <!-- End Google Adsense -->
         <div class="grade">
-          <button class="btn disabled">Grade my Answers</button>
+          <button class="btn disabled">Calificar mis Respuestas</button>
         </div>
         <div class="result">
           <p>
-            You guessed <span class="correct"></span> out of 
-            <span class="total"></span>!
+            ¡Acertaste <span class="correct"></span> de <span class="total"></span>!
           </p>
           <div class="someCorrect">
-            <button class="btn btn-primary" id="tryAgain">Try Again</button>
+            <button class="btn btn-primary" id="tryAgain">Intentar Nuevamente</button>
           </div>
           <div class="allCorrect">
-            <p>How about making it a little bit harder?</p>
-            <button class="btn btn-primary" id="nextLevel">Play next level</button> 
+            <p>¿Qué tal si lo hacemos un poco más difícil?</p>
+            <button class="btn btn-primary" id="nextLevel">Jugar Siguiente Nivel</button> 
           </div>
           <p class="share">
             <a data-url="https://twitter.com/intent/tweet?related=trisfera&text="
-             class="btn">Share your result</a>
+             class="btn">Comparte tu resultado</a>
           </p>
         </div>
       </div>
@@ -133,7 +132,7 @@
           </script>
         </div>
         <!-- End Google Adsense 2 -->
-        <div class="instructions">Who wrote this?</div>
+        <div class="instructions">¿Quién escribió esto?</div>
         <div class="authors">
         </div>
       </div>
@@ -145,7 +144,7 @@
   <div id="footer">
     <p>
       <a href="http://twitter.com/trisfera", target="_blank">
-        Developed by <span class="username">@Trisfera</span>
+        Desarrollado por <span class="username">@Trisfera</span>
       </a>
     </p>
   </div>
@@ -168,9 +167,9 @@
   <!-- I18n -->
   <script type="text/javascript">
     window.I18n = {
-      correct_answer: 'Correct answer',
-      share_result: 'I just scored {correct} out of {total} in the #followerTest! Are you a good follower? Take the test and find out http://followertest.com',
-      sign_out: 'Sign Out'
+      correct_answer: 'Respuesta correcta',
+      share_result: 'Acabo de obtener {correct} de {total} en el #followerTest! Eres un buen follower? Toma el test y compruébalo http://followertest.com/es.html',
+      sign_out: 'Cerrar Sesión'
     }
   </script>
   <!-- End I18n -->
