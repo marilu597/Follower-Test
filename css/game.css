@@ -16,6 +16,7 @@ h1 {
 form {
   text-align: center;
   margin-bottom: 1em;
+  display: none;
 }
 form label {
   font-size: 1.4em;
@@ -32,15 +33,11 @@ form .btn {
   font-size: 1.2em;
   position: relative;
   top: -0.28em;
-  display: none;
 }
 .loading, .error, .instructions, .rateLimit {
   text-align: center;
   margin:1em 1.5em;
   display: none;
-}
-.loading {
-  display: block;
 }
 #signout {
   margin: 1em;

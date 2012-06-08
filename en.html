@@ -6,24 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="FollowerTest is an addictive Twitter game where you match Tweets with their corresponding authors. Are you a good follower? Take the test and find out!">
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script src="http://platform.twitter.com/anywhere.js?id=35HvGxgPCLFn4TUbP90A&v=1" type="text/javascript"></script>
   <script type="text/javascript" src="js/jquery.jsonp.js"></script>
   <script type="text/javascript" src="js/bootstrap-dropdown.js"></script>
   <script type="text/javascript" src="js/bootstrap-collapse.js"></script>
   <script type="text/javascript" src="js/game-engine.js"></script>
   <script type="text/javascript" src="js/game-ui.js"></script>
-  <script src="http://platform.twitter.com/anywhere.js?id=35HvGxgPCLFn4TUbP90A&v=1" type="text/javascript"></script>
-  <script type="text/javascript">
-    twttr.anywhere(function (T) {
-      T.bind("authComplete", function (e, user) {
-        // triggered when auth completed successfully
-        window.location.reload()
-      });
-      T.bind("signOut", function (e) {
-        // triggered when user logs out
-        window.location.reload()
-      });
-    });
-  </script>
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css" />
   <link rel="stylesheet" type="text/css" href="css/game.css" />
@@ -46,7 +34,7 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Language <b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="/">English</a></li>
+                <li><a href="/en.html">English</a></li>
                 <li><a href="/es.html">Español</a></li>
               </ul>
             </li>
@@ -63,6 +51,9 @@
       <div class="well span12">
         <h1>How well do you know the people you follow?</h1>
         <form accept-charset="UTF-8" action="" method="get" id="startGame">
+          <label for="screen_name">@</label>
+          <input id="screen_name" name="screen_name" placeholder="Enter your username" 
+            size="30" type="text">
           <button type="submit" class="btn btn-primary">Go</button>
         </form>
         <div class="loading">Loading...</div>
@@ -72,7 +63,7 @@
           <p><span class="loginbtn"></span></p>
         </div>
         <div class="rateLimit">
-          <p>You have reached the <a href="https://dev.twitter.com/docs/rate-limiting">Twitter Rate Limit</a>.</p>
+          <p>You have reached the <a href="https://dev.twitter.com/docs/rate-limiting">Twitter Rate Limit</a>.<br>In order to continue playing, you must login with your Twitter account or wait until your rate is reset.</span></p>
           <p><span class="loginbtn"></span></p>
         </div>
         <div class="instructions">
@@ -160,95 +151,6 @@
   </div>
   <!-- End Footer -->
 
-  <!-- Function for getting url params -->
-  <script type="text/javascript">
-    function getQueryParams(qs) {
-        qs = qs.split("+").join(" ");
-
-        var params = {}, tokens,
-            re = /[?&]?([^=]+)=([^&]*)/g;
-
-        while (tokens = re.exec(qs)) {
-            params[decodeURIComponent(tokens[1])]
-                = decodeURIComponent(tokens[2]);
-        }
-
-        return params;
-    }
-  </script>
-  <!-- End unction for getting url params -->
-
-  <!-- Check if user connected Twitter and Start App -->
-  <script type="text/javascript">
-    var query = getQueryParams(document.location.search);
-    var username = query.screen_name;
-    if(username) { username = username.replace('@', ''); }
-    var twitterCurrentUser = null;
-
-    twttr.anywhere(function (T) {
-      if (T.isConnected()) {
-        twitterCurrentUser = T.currentUser;
-        username = T.currentUser.data('screen_name');
-        $('form').prepend(
-          '<input type="hidden" id="loggedOnTwitter"' + 
-           'name="loggedOnTwitter" value="true">' +
-          '<label for="screen_name">@</label>' +
-          '<input id="screen_name" name="screen_name" ' +
-            'value="' + username + '" ' + 
-            'size="30" type="text" disabled="disabled">'
-        )
-        $('form').append(
-          '<div>' +
-            '<button id="signout" type="btn">Sign Out</button>' +
-          '</div>'
-        );
-        $("#signout").bind('click', function (evt) {
-          evt.preventDefault();
-          twttr.anywhere.signOut();
-        });
-        $('.rateLimit p:first').append('<br>In order to continue playing, you must login with another Twitter account or wait until your rate is reset.');
-      }
-      else {
-        $('form').prepend(
-          '<label for="screen_name">@</label>' +
-          '<input id="screen_name" name="screen_name"' +
-            'placeholder="Enter your username" size="30" type="text"' +
-            'required="required">'
-        )
-        $('.rateLimit p:first').append('<br>In order to continue playing, you must login with your Twitter account.');
-        $('.loginbtn').each(function(i, btn) {
-          T(btn).connectButton();
-        });
-      }
-      $('.loading').hide();
-      $('form button').show();
-
-      // Start App
-      if(username) {
-        window.location.hash = '';
-        window.I18n = {
-          correct_answer: 'Correct answer',
-          share_result: 'I just scored {correct} out of {total} in the #followerTest! Are you a good follower? Take the test and find out http://followertest.com'
-        }
-        $('#screen_name').val(username);
-        // Delete last game 
-        if(typeof gameUI !== "undefined") {
-          gameUI.unbindAll();
-          delete(gameUI);
-        }
-        // Start new
-        window.location.hash = '';
-        gameUI = new GameUI();
-        gameUI.start(username, twitterCurrentUser);
-      }
-      $('form').attr('action', document.URL.replace('#', ''));
-      $('#nextLevel, #tryAgain').on('click', function() {
-        $('#startGame').submit();
-      });
-    });
-  </script>
-  <!-- End Check if user connected Twitter and Start App -->
-
   <!-- Google Analytics -->
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -262,5 +164,15 @@
     })();
   </script>
   <!--End Google Analytics -->
+
+  <!-- I18n -->
+  <script type="text/javascript">
+    window.I18n = {
+      correct_answer: 'Correct answer',
+      share_result: 'I just scored {correct} out of {total} in the #followerTest! Are you a good follower? Take the test and find out http://followertest.com',
+      sign_out: 'Sign Out'
+    }
+  </script>
+  <!-- End I18n -->
 </body>
 </html>

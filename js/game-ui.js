@@ -1,3 +1,4 @@
+// Add shuffle function to arrays
 Array.prototype.shuffle = function() {
   var len = this.length;
   var i = len;
@@ -9,6 +10,123 @@ Array.prototype.shuffle = function() {
   }
 }
 
+// Function to parse query parameters
+function getQueryParams(qs) {
+  qs = qs.split("+").join(" ");
+  var params = {}, tokens, re = /[?&]?([^=]+)=([^&]*)/g;
+  while (tokens = re.exec(qs)) {
+    params[decodeURIComponent(tokens[1])]
+        = decodeURIComponent(tokens[2]);
+  }
+  return params;
+}
+
+function addLoggedOnTwitter() {
+  if( $('#loggedOnTwitter').length <= 0 ) {
+    $('form').append(
+      '<input type="hidden" id="loggedOnTwitter" name="loggedOnTwitter" value="true">'
+    );
+  }
+}
+
+function removeLoggedOnTwitter() {
+  $('#loggedOnTwitter').remove();
+}
+
+twttr.anywhere(function (T) {
+  T.bind("authComplete", function (e, user) {
+    // triggered when user logs in
+    addLoggedOnTwitter();
+    $('#screen_name').val(user.attributes.screen_name);
+    $('#startGame').submit();
+  });
+  T.bind("signOut", function (e) {
+    // triggered when user logs out
+    removeLoggedOnTwitter();
+    $('#startGame').submit();
+  });
+});
+
+// Check if user connected Twitter and Start App
+$(document).ready(function() {
+  var query = getQueryParams(document.location.search);
+  var username = query.screen_name;
+  if(username) { username = username.replace('@', ''); }
+  var loggedOnTwitter = query.loggedOnTwitter;
+  var twitterCurrentUser = null;
+
+  $('form').attr('action', document.URL.replace('#', ''));
+  $('#nextLevel, #tryAgain').on('click', function() {
+    $('#screen_name').removeAttr('disabled');
+    $('#startGame').submit();
+  });
+
+  if(loggedOnTwitter) {
+    twttr.anywhere(function (T) {
+      // Play using Twitter Anywhere
+      if (T.isConnected()) {
+        twitterCurrentUser = T.currentUser;
+        username = T.currentUser.data('screen_name');
+        addLoggedOnTwitter();
+        $('#screen_name').val(username).prop('disabled', true);
+        $('form').append(
+          '<div><button id="signout" type="btn">' + I18n.sign_out + '</button></div>'
+        );
+        $("#signout").bind('click', function (evt) {
+          evt.preventDefault();
+          twttr.anywhere.signOut();
+        });
+        window.location.hash = '';
+        // Delete last game 
+        if(typeof gameUI !== "undefined") {
+          gameUI.unbindAll();
+          delete(gameUI);
+        }
+        // Start new game
+        gameUI = new GameUI();
+        gameUI.start(username, twitterCurrentUser);
+      }
+      else {
+        removeLoggedOnTwitter();
+        $('#screen_name').removeAttr('disabled');
+        $('#startGame').submit();
+      }
+    });
+  }
+  else {
+    if(username) {
+      $('#screen_name').val(username);
+      twttr.anywhere(function (T) {
+        // Make sure user is not connected with Twitter
+        if (T.isConnected()) {
+          addLoggedOnTwitter();
+          $('#screen_name').removeAttr('disabled');
+          $('#startGame').submit();
+        }
+        else {
+          $('.loginbtn').each(function(i, btn) {
+            T(btn).connectButton();
+          });
+          window.location.hash = '';
+          // Delete last game 
+          if(typeof gameUI !== "undefined") {
+            gameUI.unbindAll();
+            delete(gameUI);
+          }
+          // Start new game
+          gameUI = new GameUI();
+          gameUI.start(username, twitterCurrentUser);
+        }
+      });
+    }
+    else {
+      // Wait for user to insert username
+      $('form').show();
+    }
+  }
+});
+
+// GameUI class
 window.GameUI = function() {
   this.gameEngine;
   this.username;
@@ -175,6 +293,7 @@ window.GameUI = function() {
       $('.authors').append(author);
     })
 
+    $('form').show();
     $('.grade').show();
     $('.adsense').show();
   }
